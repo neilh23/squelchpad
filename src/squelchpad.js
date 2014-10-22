@@ -37,11 +37,11 @@
         'user-select': 'none'
 
       });
-      el.mousedown(function() { el.squelch.bclick(el); } );
+      el.mousedown(function(ev) { el.squelch.bclick(el, ev); } );
     });
   };
 
-  $.fn.squelch.bclick = function(el) {
+  $.fn.squelch.bclick = function(el, event) {
     var body = $('body');
 
     var options = el.data('squelch');
@@ -52,15 +52,32 @@
 
     var newColor = $.Color(oldColor).lightness(light);
 
-    el.css('backgroundColor', newColor);
-    el.animate({ backgroundColor: oldColor }, 200);
+    var parentOffset = el.parent().offset(); 
+    var relX = event.pageX - parentOffset.left;
+    var relY = event.pageY - parentOffset.top;
+    var wdth = el.width();
+    var hght = el.height();
 
-    el.css({ 'box-shadow': options.highlightBoxShadow });
-    body.mouseup(function() {
-      el.css({ boxShadow: options.defaultBoxShadow, backgroundColor: oldColor });
-    });
-    body.mouseleave(function() {
-      el.css({ boxShadow: options.defaultBoxShadow, backgroundColor: oldColor });
+    // FIXME: optimise some of this ...
+    var radius = Math.sqrt(Math.pow(wdth/2, 2) + Math.pow(wdth/2, 2));
+    // console.log("Radius: " + radius);
+    var x1 = Math.pow(relX - wdth/2, 2);
+    var y1 = Math.pow(relY - hght/2, 2);
+    var z = x1 + y1;
+    var p = Math.sqrt(z)/radius;
+    // console.log("z: " + z + " , p " + p);
+
+    var velocity = 1.0 - p;
+
+    // console.log("Velocity: " + velocity);
+
+    el.trigger("squelchOn", {velocity: velocity});
+
+    el.css('backgroundColor', newColor);
+
+    body.one("mouseup mouseleave", function() {
+      el.trigger("squelchOff", {});
+      el.animate({ backgroundColor: oldColor }, 200);
     });
   };
 

@@ -11,15 +11,24 @@ $(function($) {
     $('#bt1').squelch({baseColor: 'red'});
     $('#bt2').squelch({baseColor: 'green'});
     $('#bt3').squelch({baseColor: 'blue'});
+
+    $('.squelch').on("squelchOn", function(e, args) {
+      console.log("Squelched " + args.velocity);
+    });
+
+    $('.squelch').on("squelchOff", function(args) {
+      console.log("Unsquelched");
+    });
 });
 </script>
 </head>
 <body>
 <table>
   <tr>
-    <td><div id="bt1"></div></td>
-    <td><div id="bt2"></div></td>
-    <td><div id="bt3"></div></td>
+    <td><div class="squelch" id="bt1"></div></td>
+    <td><div class="squelch" id="bt2"></div></td>
+    <td><div class="squelch" id="bt3"></div></td>
   </tr>
 </table>
 </body>
+
