@@ -11,6 +11,25 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <title>Squelchpad by neilh23</title>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-color/jquery.color.js"></script>
+    <script src="src/squelchpad.js"></script>
+    <script>
+    $(function($) {
+        console.log('Hello world');
+        $('#bt1').squelch({baseColor: 'red'});
+        $('#bt2').squelch({baseColor: 'green'});
+        $('#bt3').squelch({baseColor: 'blue'});
+
+        $('.squelch').on("squelchOn", function(e, args) {
+          console.log("Squelched " + args.velocity);
+        });
+
+        $('.squelch').on("squelchOff", function(args) {
+          console.log("Unsquelched");
+        });
+    });
+    </script>
   </head>
 
   <body>
@@ -35,6 +54,14 @@
 <a name="squelchy-squelchy-squelchy-" class="anchor" href="#squelchy-squelchy-squelchy-"><span class="octicon octicon-link"></span></a>Squelchy squelchy squelchy ...</h3>
 
 <p>comming soon</p>
+
+          <table>
+            <tr>
+              <td><div class="squelch" id="bt1"></div></td>
+              <td><div class="squelch" id="bt2"></div></td>
+              <td><div class="squelch" id="bt3"></div></td>
+            </tr>
+          </table>
         </section>
 
         <footer>
