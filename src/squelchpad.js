@@ -57,6 +57,8 @@
     var relY = event.pageY - parentOffset.top;
     var wdth = el.width();
     var hght = el.height();
+    var posX = (2*relX - wdth)/wdth;
+    var posY = (2*relY - hght)/hght;
 
     // FIXME: optimise some of this ...
     var radius = Math.sqrt(Math.pow(wdth/2, 2) + Math.pow(wdth/2, 2));
@@ -71,7 +73,7 @@
 
     // console.log("Velocity: " + velocity);
 
-    el.trigger("squelchOn", {velocity: velocity});
+    el.trigger("squelchOn", {velocity: velocity, posX: posX, posY: posY});
 
     el.css('backgroundColor', newColor);
 
