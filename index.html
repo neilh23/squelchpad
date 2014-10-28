@@ -7,7 +7,42 @@
 <script src="src/squelchpad.js"></script>
 <script src="src/reverb.js"></script>
 <script src="src/drumkit.js"></script>
-<script>$(function($) { startKit(); });</script>
+<script>$(function($) { 
+  var context;
+  
+  try {
+    context = new webkitAudioContext();
+  } catch(e) { alert("Web Audio API is not supported in this browser"); }
+
+  new DrumPad({
+    context: context,
+    element: $('#bt0'),
+    baseColor: 'red',
+    samples: [ { sample: 'sounds/kick.wav' } ]
+    });
+
+  new DrumPad({
+    context: context,
+    element: $('#bt1'),
+    baseColor: 'green',
+    samples: [ {
+      sample: 'sounds/hihat-closed.wav',
+      position: 'T',
+      pan: true
+    }, {
+      sample: 'sounds/hihat-open.wav',
+      position: 'B',
+      pan: true
+    } ] });
+
+  new DrumPad({
+    context: context,
+    element: $('#bt2'),
+    baseColor: 'blue',
+    samples: [ { sample: 'sounds/snare.wav' } ]
+    });
+
+});</script>
 </head>
 <body>
 <table>
