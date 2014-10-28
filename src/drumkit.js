@@ -48,13 +48,17 @@ function DrumPad(args) {
     var p = this.samples[i];
 
     p.gainNode = this.context.createGain();
-    p.gainNode.connect(this.destination);
-    if (p.pan && !this.hasPan) {
-      this.hasPan = true;
+    if (p.pan) {
+      if (!this.hasPan) {
+        this.hasPan = true;
 
-      this.pan = this.context.createPanner();
-      this.pan.panningModel = 'equalpower';
-      this.pan.connect(p.gainNode);
+        this.pan = this.context.createPanner();
+        this.pan.panningModel = 'equalpower';
+        this.pan.connect(this.destination);
+      }
+      p.gainNode.connect(this.pan);
+    } else {
+      p.gainNode.connect(this.destination);
     }
     var request = new XMLHttpRequest();
     request.open('GET', p.sample, true);
