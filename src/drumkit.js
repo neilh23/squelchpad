@@ -88,8 +88,8 @@ DrumPad.prototype = Object.create(null, {
         case 'M': gain = args.velocity; break;
         case 'R': gain = args.xvel; break;
         case 'L': gain = 1.0 - args.xvel; break;
-        case 'T': gain = args.yvel; console.log("Top: " + gain); break;
-        case 'B': gain = 1.0 - args.yvel; console.log("Bottom: " + gain); break;
+        case 'T': gain = args.yvel;  break;
+        case 'B': gain = 1.0 - args.yvel;  break;
         case 'TR': gain = this.cornerGain(args.xvel, args.yvel); break;
         case 'TL': gain = this.cornerGain(-args.xvel, args.yvel); break;
         case 'BR': gain = this.cornerGain(args.xvel, -args.yvel); break;
@@ -104,7 +104,6 @@ DrumPad.prototype = Object.create(null, {
       var src = this.context.createBufferSource();
       var keys = Object.keys(src);
 
-      console.log(keys);
       src.buffer = p.buffer;
 
       src.connect(p.gainNode);
