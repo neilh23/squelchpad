@@ -10,11 +10,10 @@ function bufferSound(event) {
       var vel = args.velocity;
 
       wet.gain.value = 1.0 - vel;
-      dry.gain.value = vel;0
+      dry.gain.value = vel;
 
       if (index == 1) {
-        console.log(args.posX);
-        pan.setPosition(args.posX, 0, 1-Math.abs(args.posX));
+        pan.setPosition(args.xvel, 0, 1-Math.abs(args.xvel));
       }
 
       var src = audioContext.createBufferSource();
@@ -38,6 +37,11 @@ function startKit() {
   $('#bt0').squelch({baseColor: 'red'});
   $('#bt1').squelch({baseColor: 'green'});
   $('#bt2').squelch({baseColor: 'blue'});
+  /*
+  $('.squelch').on("squelchOn", function(e, args) {
+    console.log("Squelch: " + args.velocity + "/" + args.xvel + "/" + args.yvel);
+  });
+  */
 
   var verb = new SimpleReverb(audioContext, { seconds: 1.0, decay: 4, reverse: 0 });
   var master = audioContext.createGain();
@@ -45,7 +49,6 @@ function startKit() {
   dry = audioContext.createGain();
   pan = audioContext.createPanner();
   pan.panningModel = 'equalpower';
-
 
   pan.connect(verb.input);
   pan.connect(dry);

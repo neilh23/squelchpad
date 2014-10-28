@@ -37,7 +37,7 @@
         'user-select': 'none'
 
       });
-      el.mousedown(function(ev) { el.squelch.bclick(el, ev); } );
+      el.on("mousedown touchstart", function(ev) { el.squelch.bclick(el, ev); } );
     });
   };
 
@@ -55,29 +55,32 @@
     var parentOffset = el.parent().offset(); 
     var relX = event.pageX - parentOffset.left;
     var relY = event.pageY - parentOffset.top;
-    var wdth = el.width();
+    var wdth = el.width(); // get these fresh in case of size change underneath
     var hght = el.height();
-    var posX = (2*relX - wdth)/wdth;
-    var posY = (2*relY - hght)/hght;
+    var xmin = options.yvelmin;
+    var xmax = options.xvelmax;
+    var ymin = options.yvelmin;
+    var ymax = options.yvelmax;
+    var xpos = xmin + (xmax - xmin)*relX/wdth;
+    var ypos = ymin + (ymax - ymin)*relY/hght;
+    var velmin = options.velmin;
+    var velmax = options.velmax;
 
     // FIXME: optimise some of this ...
     var radius = Math.sqrt(Math.pow(wdth/2, 2) + Math.pow(wdth/2, 2));
-    // console.log("Radius: " + radius);
-    var x1 = Math.pow(relX - wdth/2, 2);
-    var y1 = Math.pow(relY - hght/2, 2);
-    var z = x1 + y1;
+    var z = Math.pow(relX - wdth/2, 2) + Math.pow(relY - hght/2, 2);
     var p = Math.sqrt(z)/radius;
     // console.log("z: " + z + " , p " + p);
 
-    var velocity = 1.0 - p;
+    // var velocity = velmin + velmax - p*(velmax - velmin);
+    var velocity = velmin*(1 + p) + velmax*(1 - p);
 
-    // console.log("Velocity: " + velocity);
-
-    el.trigger("squelchOn", {velocity: velocity, posX: posX, posY: posY});
+    el.trigger("squelchOn", {velocity: velocity, xvel: xpos, yvel: ypos});
 
     el.css('backgroundColor', newColor);
 
-    body.one("mouseup mouseleave", function() {
+    // FIXME: use hammer.js - https://hammerjs.github.io/
+    body.one("mouseup mouseleave touchend touchcancel", function() {
       el.trigger("squelchOff", {});
       el.animate({ backgroundColor: oldColor }, 200);
     });
@@ -85,10 +88,15 @@
 
   $.fn.squelch.options = {
     height: 140,
-    xmin: 0.0,
-    xmax: 1.0,
-    ymin: 0.0,
-    ymax: 1.0,
+    xvelmin: -1.0,
+    xvelmax: 1.0,
+    xveltype: 'lin',
+    yvelmin: -1.0,
+    yvelmax: 1.0,
+    yveltype: 'exp',
+    velmin: 0.0,
+    velmax: 1.0,
+    veltype: 'lin', // 'lin' or 'exp'
     minLightness: 0.25,
     maxLightness: 0.9,
     baseColor: 'blue',
