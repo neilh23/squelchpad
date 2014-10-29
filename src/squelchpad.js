@@ -115,9 +115,4 @@
   $.squelch.options = {
   };
 
-  // Custom selector.
-  $.expr[':'].squelch = function (elem) {
-    return $(elem).text().indexOf('squelch') !== -1;
-  };
-
 }(jQuery));

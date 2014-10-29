@@ -6,7 +6,8 @@
 <script src="bower_components/jquery-color/jquery.color.js"></script>
 <script src="src/squelchpad.js"></script>
 <script src="src/reverb.js"></script>
-<script src="src/drumkit.js"></script>
+<script src="src/squelchpad-drum.js"></script>
+<script src="src/squelchpad-synth.js"></script>
 <script>$(function($) { 
   var context;
   
@@ -42,6 +43,12 @@
     samples: [ { sample: 'sounds/snare.wav' } ]
     });
 
+  new SynthPad({
+      context: context,
+      element: $('#bt3'),
+      baseColor: 'orange',
+      });
+
 });</script>
 </head>
 <body>
@@ -50,6 +57,7 @@
     <td><div class="squelch" id="bt0"></div></td>
     <td><div class="squelch" id="bt1"></div></td>
     <td><div class="squelch" id="bt2"></div></td>
+    <td><div class="squelch" id="bt3"></div></td>
   </tr>
 </table>
 </body>
