@@ -42,6 +42,10 @@
   };
 
   $.fn.squelch.bclick = function(el, event) {
+    if (el.squelched) { return; }
+
+    el.squelched = true;
+    
     var body = $('body');
 
     var options = el.data('squelch');
@@ -79,10 +83,13 @@
 
     el.css('backgroundColor', newColor);
 
-    // FIXME: use hammer.js - https://hammerjs.github.io/
+    // FIXME: use hammer.js? - https://hammerjs.github.io/ Maybe not - try and reduce dependencies!
     body.one("mouseup mouseleave touchend touchcancel", function() {
-      el.trigger("squelchOff", {});
-      el.animate({ backgroundColor: oldColor }, 200);
+      if(el.squelched) {
+        el.squelched = false;
+        el.trigger("squelchOff", {});
+        el.animate({ backgroundColor: oldColor }, 300);
+      }
     });
   };
 

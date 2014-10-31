@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Squelchpad</title>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/jquery-color/jquery.color.js"></script>
+<script src="src/squelchpad.js"></script>
+<script src="src/reverb.js"></script>
+<script src="src/squelchpad-drum.js"></script>
+<script src="src/squelchpad-synth.js"></script>
+<script>$(function($) { 
+  var context;
+  
+  try {
+    context = new webkitAudioContext();
+  } catch(e) { alert("Web Audio API is not supported in this browser"); }
+
+  new DrumPad({
+    context: context,
+    element: $('#bt0'),
+    baseColor: 'red',
+    samples: [
+      { sample: 'sounds/kick.wav', position: 'M' },
+      { sample: 'sounds/kick-large.wav', position: 'M', inverse: true },
+    ]
+    });
+
+  new DrumPad({
+    context: context,
+    element: $('#bt1'),
+    baseColor: '#d43cf3',
+    samples: [
+      { sample: 'sounds/hihat-closed.wav', position: 'T', pan: true },
+      { sample: 'sounds/hihat-open.wav', position: 'B' }
+    ] });
+
+  new DrumPad({
+    context: context,
+    element: $('#bt2'),
+    baseColor: '#4fcb71',
+    samples: [
+      { sample: 'sounds/snare.wav', position: 'M' },
+      { sample: 'sounds/clap.wav', position: 'M', inverse: true },
+    ]
+    });
+
+  new DrumPad({
+    context: context,
+    element: $('#bt3'),
+    baseColor: 'blue',
+    samples: [
+      { sample: 'sounds/tom1.wav', position: 'TL' },
+      { sample: 'sounds/tom2.wav', position: 'TR' },
+      { sample: 'sounds/tom3.wav', position: 'BR' },
+      { sample: 'sounds/tom4.wav', position: 'BL' },
+      { sample: 'sounds/tom5.wav', position: 'M' }
+    ]
+    });
+
+  /*
+  new SynthPad({
+      context: context,
+      element: $('#bt4'),
+      baseColor: 'orange',
+      });
+      */
+
+});</script>
+</head>
+<body>
+<table>
+  <tr>
+    <td><div class="squelch" id="bt0"></div></td>
+    <td><div class="squelch" id="bt1"></div></td>
+  </tr>
+  <tr>
+    <td><div class="squelch" id="bt2"></div></td>
+    <td><div class="squelch" id="bt3"></div></td>
+    <!-- <td><div class="squelch" id="bt4"></div></td> -->
+  </tr>
+</table>
+<p><a href="index.html">back</a></p>
+</body>
+</html>

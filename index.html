@@ -5,60 +5,20 @@
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/jquery-color/jquery.color.js"></script>
 <script src="src/squelchpad.js"></script>
-<script src="src/reverb.js"></script>
-<script src="src/squelchpad-drum.js"></script>
-<script src="src/squelchpad-synth.js"></script>
-<script>$(function($) { 
-  var context;
-  
-  try {
-    context = new webkitAudioContext();
-  } catch(e) { alert("Web Audio API is not supported in this browser"); }
-
-  new DrumPad({
-    context: context,
-    element: $('#bt0'),
-    baseColor: 'red',
-    samples: [ { sample: 'sounds/kick.wav' } ]
-    });
-
-  new DrumPad({
-    context: context,
-    element: $('#bt1'),
-    baseColor: 'green',
-    samples: [ {
-      sample: 'sounds/hihat-closed.wav',
-      position: 'T',
-      pan: true
-    }, {
-      sample: 'sounds/hihat-open.wav',
-      position: 'B',
-      pan: true
-    } ] });
-
-  new DrumPad({
-    context: context,
-    element: $('#bt2'),
-    baseColor: 'blue',
-    samples: [ { sample: 'sounds/snare.wav' } ]
-    });
-
-  new SynthPad({
-      context: context,
-      element: $('#bt3'),
-      baseColor: 'orange',
-      });
-
-});</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+<script src="https://cdn.jsdelivr.net/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script>$(function($) {  $('#squelchmehard').squelch(); });</script>
 </head>
 <body>
-<table>
-  <tr>
-    <td><div class="squelch" id="bt0"></div></td>
-    <td><div class="squelch" id="bt1"></div></td>
-    <td><div class="squelch" id="bt2"></div></td>
-    <td><div class="squelch" id="bt3"></div></td>
-  </tr>
-</table>
+<div class="container">
+<H1>Squelchpad</H1>
+<p class="lead">
+Squelchpad is a jQuery-based javascript button inspired by hardware such as the Akai MPC series, Novation Launchpad, and Korg Kaoss Pad.
+</p>
+<div class="row"><div class="col-md-4"><div class="col-md-4" id="squelchmehard"></div><div class="col-md-4"></div></div>
+<p class="lead">Example <a href="drumkit">Drum Kit</a> using the Squelchpad 'DrumPad' class.</p>
+</div>
 </body>
+</html>
 

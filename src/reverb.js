@@ -55,13 +55,12 @@ SimpleReverb.prototype = Object.create(null, {
 
   _buildImpulse: {
     value: function () {
-      var rate = this._context.sampleRate
-        , length = rate * this.seconds
-        , decay = this.decay
-        , impulse = this._context.createBuffer(2, length, rate)
-        , impulseL = impulse.getChannelData(0)
-        , impulseR = impulse.getChannelData(1)
-        , n, i;
+      var rate = this._context.sampleRate,
+          length = rate * this.seconds,
+          decay = this.decay,
+          impulse = this._context.createBuffer(2, length, rate),
+          impulseL = impulse.getChannelData(0),
+          impulseR = impulse.getChannelData(1), n, i;
 
       for (i = 0; i < length; i++) {
         n = this.reverse ? length - i : i;

@@ -1,3 +1,4 @@
+/* global console */
 function SynthPad(args) {
   "use strict";
 
@@ -9,9 +10,16 @@ function SynthPad(args) {
     baseColor: args.baseColor||'blue',
     xvelmin: 90,
     xvelmax: 8000,
-    yvelmin: 6.0,
+    yvelmin: 0.8,
     yvelmax: 0.1
   });
+
+  this.attack = 0.1||args.attack;
+  this.decay = 0.5||args.decay;
+
+  // override this to 432hz
+  // http://www.whydontyoutrythis.com/2013/08/440hz-music-conspiracy-to-detune-good-vibrations-from-natural-432hz.html
+  this.base_frequency = 440||args.base_frequency;
 
   this.gain = this.context.createGain();
   this.gain.connect(this.destination);
@@ -25,11 +33,24 @@ function SynthPad(args) {
   var target = this;
   el.on("squelchOn", function(e, args) {
     target.oscillator.frequency.value = args.xvel;
-    target.gain.gain.value = args.yvel;
+    var now = target.context.currentTime;
+    var param = target.gain.gain;
+    param.cancelScheduledValues(now);
+    console.log("Ramping value to " + args.yvel);
+    param.linearRampToValueAtTime(args.yvel, now + this.attack);
   });
-  el.on("squelchOff", function(e, args) {
-    // TODO: less efficient than just recreating the oscillator
-    // every time?
-    target.gain.gain.value = 0.0;
+  el.on("squelchOff", function() {
+    // TODO: oscillator is still running in the background,
+    // should probably do some cleanup here
+    var param = target.gain.gain;
+    var now = target.context.currentTime;
+    param.cancelScheduledValues(now);
+    console.log("Ramping value to 0");
+    param.linearRampToValueAtTime(0, now + this.decay);
   });
 }
+
+SynthPad.prototype = Object.create(null, {
+  midicps: { value: function(midi) { return (this.base_freq||440)* Math.pow(2, (midi - 69) / 12); }},
+  // FIXME: create function for note 2 cps, e.g. 'C4', 'D#6', 'Gb3'
+});

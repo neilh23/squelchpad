@@ -65,7 +65,14 @@ function DrumPad(args) {
     request.responseType = 'arraybuffer';
     request.drumpad = this;
     request.squindex = i;
-    request.addEventListener('load', function(e) { var t = e.target; t.drumpad.fileLoaded(t.squindex, t.response); }, false);
+    /* jshint ignore:start */
+    request.addEventListener('load',
+      function(e) {
+        var t = e.target;
+        t.drumpad.fileLoaded(t.squindex, t.response);
+      }, false
+    );
+    /* jshint ignore:end */
     request.send();
   }
 }
@@ -94,10 +101,10 @@ DrumPad.prototype = Object.create(null, {
         case 'L': gain = 1.0 - args.xvel; break;
         case 'T': gain = args.yvel;  break;
         case 'B': gain = 1.0 - args.yvel;  break;
-        case 'TR': gain = this.cornerGain(args.xvel, args.yvel); break;
-        case 'TL': gain = this.cornerGain(-args.xvel, args.yvel); break;
-        case 'BR': gain = this.cornerGain(args.xvel, -args.yvel); break;
-        case 'BL': gain = this.cornerGain(-args.xvel, -args.yvel); break;
+        case 'TR': gain = this.cornerGain(args.xvel, -args.yvel); break;
+        case 'TL': gain = this.cornerGain(-args.xvel, -args.yvel); break;
+        case 'BR': gain = this.cornerGain(args.xvel, args.yvel); break;
+        case 'BL': gain = this.cornerGain(-args.xvel, args.yvel); break;
       }
       if (p.inverse) { gain = 1.0 - gain; }
 
@@ -106,7 +113,6 @@ DrumPad.prototype = Object.create(null, {
       p.gainNode.gain.value = gain;
 
       var src = this.context.createBufferSource();
-      var keys = Object.keys(src);
 
       src.buffer = p.buffer;
 
