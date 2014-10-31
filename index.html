@@ -8,7 +8,19 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap-theme.min.css">
 <script src="https://cdn.jsdelivr.net/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-<script>$(function($) {  $('#squelchmehard').squelch(); });</script>
+<script>
+$(function($) { 
+    $('#bt1').squelch({baseColor: 'red'});
+    $('#bt2').squelch({baseColor: 'green'});
+    $('#bt3').squelch({baseColor: 'blue'});
+  var place = 1;
+  setInterval(function() {
+    $('#bt'+place).squelch();
+    if (++place >3) { place = 1; }
+  }, 420);
+  }
+ );</script>
+<style>table tr td { padding: 5px; }</style>
 </head>
 <body>
 <div class="container">
@@ -16,8 +28,16 @@
 <p class="lead">
 Squelchpad is a jQuery-based javascript button inspired by hardware such as the Akai MPC series, Novation Launchpad, and Korg Kaoss Pad.
 </p>
-<div class="row"><div class="col-md-4"><div class="col-md-4" id="squelchmehard"></div><div class="col-md-4"></div></div>
-<p class="lead">Example <a href="drumkit">Drum Kit</a> using the Squelchpad 'DrumPad' class.</p>
+<p>
+<table style="margin-left: auto; margin-right: auto;">
+  <tr>
+    <td><div id="bt1" class="squelchme"></div></td>
+    <td><div id="bt2" class="squelchme"></div></td>
+    <td><div id="bt3" class="squelchme"></div></td>
+  </tr>
+</table>
+</p>
+<p class="lead">Example <a href="drumkit.html">Drum Kit</a> using the Squelchpad 'DrumPad' class.</p>
 </div>
 </body>
 </html>

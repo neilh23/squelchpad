@@ -20,6 +20,11 @@
     options.defaultColor = defaultColor;
     return this.each(function () {
       var el = $(this);
+      if (el.data('squelch')) {
+        el.trigger("mousedown", {});
+        el.trigger("mouseup", {});
+        return;
+      } 
       el.data('squelch', options);
       el.css({
         backgroundColor: defaultColor,
