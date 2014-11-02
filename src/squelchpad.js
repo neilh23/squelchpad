@@ -42,7 +42,10 @@
         'user-select': 'none'
 
       });
-      el.on("mousedown touchstart", function(ev) { el.squelch.bclick(el, ev); } );
+      el.on("mousedown touchstart", function(ev) {
+        ev.preventDefault();
+        el.squelch.bclick(el, ev);
+      });
     });
   };
 
@@ -90,6 +93,7 @@
 
     // FIXME: use hammer.js? - https://hammerjs.github.io/ Maybe not - try and reduce dependencies!
     body.one("mouseup mouseleave touchend touchcancel", function() {
+      ev.preventDefault();
       if(el.squelched) {
         el.squelched = false;
         el.trigger("squelchOff", {});
