@@ -1,0 +1,10 @@
+{
+  "name": "squelchpad",
+  "version": "0.0.1",
+  "dependencies": {
+    "qunit": "~1.12.0",
+    "jquery": "latest",
+    "jquery-color": "~2.1.2"
+  },
+  "devDependencies": { }
+}

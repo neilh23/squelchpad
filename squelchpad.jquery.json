@@ -1,0 +1,28 @@
+{
+  "name": "squelchpad",
+  "title": "Squelchpad",
+  "description": "pad control influenced by synth control pads",
+  "version": "0.0.1",
+  "homepage": "",
+  "author": {
+    "name": "Neil Howie",
+    "url": "https://github.com/neilh23"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ],
+  "dependencies": {
+    "jquery": "latest"
+  },
+  "keywords": [
+    "jquery-plugin"
+  ]
+}
