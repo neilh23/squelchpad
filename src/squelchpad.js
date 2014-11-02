@@ -92,7 +92,7 @@
     el.css('backgroundColor', newColor);
 
     // FIXME: use hammer.js? - https://hammerjs.github.io/ Maybe not - try and reduce dependencies!
-    body.one("mouseup mouseleave touchend touchcancel", function() {
+    body.one("mouseup mouseleave touchend touchcancel", function(ev) {
       ev.preventDefault();
       if(el.squelched) {
         el.squelched = false;
