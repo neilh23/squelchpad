@@ -11,6 +11,7 @@
  * |                     |
  * |BL        B        BR|
  * +---------------------+
+ * - 'MT' for multi-touch (pressing with two fingers at once)
  * or no specification for constant
  * e.g.
  * samples: [ { sample: 'kick1.wav', pan: true },
@@ -20,12 +21,14 @@
  *   { sample: 'kick5.wav', position: 'TL' },
  *   { sample: 'kick6.wav', position: 'BR' },
  *   { sample: 'kick7.wav', position: 'BL' },
+ *   { sample: 'kick8.wav', position: 'MT' }
  * ]
  * will create a drumpad which has:
  * * kick1 played at a constant volume, but panned based on 
  * * kick2 played loudest closest to the centre
  * * kick3 played quietest closest to the centre
  * * kicks 4,5,6,7 played loudest closest to the four corners
+ * * kick8 played at full volume when pressed with two fingers
  *
  * options:
  * * baseColor: passed through to squelchpad
@@ -41,6 +44,7 @@ function DrumPad(args) {
   this.loaded = 0;
 
   this.hasPan = false;
+  this.hasMultiPress = false;
 
   el.squelch({baseColor: args.baseColor||'blue' });
 
@@ -60,6 +64,9 @@ function DrumPad(args) {
     } else {
       p.gainNode.connect(this.destination);
     }
+
+    if (p.position === 'MT') { this.hasMultiPress = true; }
+
     var request = new XMLHttpRequest();
     request.open('GET', p.sample, true);
     request.responseType = 'arraybuffer';
@@ -95,17 +102,23 @@ DrumPad.prototype = Object.create(null, {
       var p = this.samples[i];
 
       var gain = 1.0;
-      switch(p.position) {
-        case 'M': gain = args.velocity; break;
-        case 'R': gain = args.xvel; break;
-        case 'L': gain = 1.0 - args.xvel; break;
-        case 'T': gain = args.yvel;  break;
-        case 'B': gain = 1.0 - args.yvel;  break;
-        case 'TR': gain = this.cornerGain(args.xvel, -args.yvel); break;
-        case 'TL': gain = this.cornerGain(-args.xvel, -args.yvel); break;
-        case 'BR': gain = this.cornerGain(args.xvel, args.yvel); break;
-        case 'BL': gain = this.cornerGain(-args.xvel, args.yvel); break;
+      if (this.hasMultiPress && args.touches > 1) {
+        gain = (p.position === 'MT') ? 1.0 : 0.0;
+      } else {
+        switch(p.position) {
+          case 'M': gain = args.velocity; break;
+          case 'R': gain = args.xvel; break;
+          case 'L': gain = 1.0 - args.xvel; break;
+          case 'T': gain = args.yvel;  break;
+          case 'B': gain = 1.0 - args.yvel;  break;
+          case 'TR': gain = this.cornerGain(args.xvel, -args.yvel); break;
+          case 'TL': gain = this.cornerGain(-args.xvel, -args.yvel); break;
+          case 'BR': gain = this.cornerGain(args.xvel, args.yvel); break;
+          case 'BL': gain = this.cornerGain(-args.xvel, args.yvel); break;
+          case 'MT': gain = 0.0; break;
+        }
       }
+
       if (p.inverse) { gain = 1.0 - gain; }
 
       if (gain <= 0.0) { continue; }

@@ -68,8 +68,11 @@
     var parentOffset = el.parent().offset(); 
     var posSource;
 
-    if (event.type == 'touchstart') {
+    var touches = 1;
+
+    if (event.type === 'touchstart') {
       posSource = event.originalEvent.touches[0];
+      touches = event.originalEvent.touches.length;
     } else {
       posSource = event;
     }
@@ -96,7 +99,7 @@
     // var velocity = velmin + velmax - p*(velmax - velmin);
     var velocity = velmin*(1 + p) + velmax*(1 - p);
 
-    el.trigger("squelchOn", {velocity: velocity, xvel: xpos, yvel: ypos});
+    el.trigger("squelchOn", {velocity: velocity, xvel: xpos, yvel: ypos, touches: touches});
 
     el.css('backgroundColor', newColor);
 

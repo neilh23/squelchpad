@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Squelchpad</title>
+<title>Squelchpad Drumkit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/jquery-color/jquery.color.js"></script>
 <script src="src/squelchpad.js"></script>
@@ -41,6 +42,7 @@
     samples: [
       { sample: 'sounds/snare.wav', position: 'M' },
       { sample: 'sounds/clap.wav', position: 'M', inverse: true },
+      { sample: 'sounds/crash.wav', position: 'MT' }
     ]
     });
 
@@ -57,14 +59,6 @@
     ]
     });
 
-  /*
-  new SynthPad({
-      context: context,
-      element: $('#bt4'),
-      baseColor: 'orange',
-      });
-      */
-
 });</script>
 </head>
 <body>
@@ -76,7 +70,6 @@
   <tr>
     <td><div class="squelch" id="bt2"></div></td>
     <td><div class="squelch" id="bt3"></div></td>
-    <!-- <td><div class="squelch" id="bt4"></div></td> -->
   </tr>
 </table>
 <p><a href="index.html">back</a></p>
