@@ -44,6 +44,7 @@
       });
       el.on("mousedown touchstart", function(ev) {
         ev.preventDefault();
+        ev.stopImmediatePropagation(); // or just stopPropagation?
         el.squelch.bclick(el, ev);
       });
     });
@@ -65,8 +66,16 @@
     var newColor = $.Color(oldColor).lightness(light);
 
     var parentOffset = el.parent().offset(); 
-    var relX = event.pageX - parentOffset.left;
-    var relY = event.pageY - parentOffset.top;
+    var posSource;
+
+    if (event.type == 'touchstart') {
+      posSource = event.originalEvent.touches[0];
+    } else {
+      posSource = event;
+    }
+
+    var relX = posSource.pageX - parentOffset.left;
+    var relY = posSource.pageY - parentOffset.top;
     var wdth = el.width(); // get these fresh in case of size change underneath
     var hght = el.height();
     var xmin = options.yvelmin;
@@ -94,10 +103,14 @@
     // FIXME: use hammer.js? - https://hammerjs.github.io/ Maybe not - try and reduce dependencies!
     body.one("mouseup mouseleave touchend touchcancel", function(ev) {
       ev.preventDefault();
-      if(el.squelched) {
+      ev.stopImmediatePropagation(); // or just stopPropagation?
+      if(el.squelched && ev.handled !== true) {
+        ev.handled = true;
         el.squelched = false;
         el.trigger("squelchOff", {});
         el.animate({ backgroundColor: oldColor }, 300);
+      } else {
+        return false;
       }
     });
   };

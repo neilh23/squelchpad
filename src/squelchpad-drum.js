@@ -117,6 +117,7 @@ DrumPad.prototype = Object.create(null, {
       src.buffer = p.buffer;
 
       src.connect(p.gainNode);
+      // src.connect(this.context.destination);
 
       src.start(0);
     }
