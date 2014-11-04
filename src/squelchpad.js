@@ -6,6 +6,8 @@
  * Licensed under the MIT license.
  */
 
+/* -- global console */
+
 (function ($) {
   'use strict';
   // Collection method.
@@ -25,6 +27,7 @@
         el.trigger("mouseup", {});
         return;
       } 
+      el.squelched = false;
       el.data('squelch', options);
       el.css({
         backgroundColor: defaultColor,
@@ -32,8 +35,8 @@
         margin: '2px',
         borderRadius: '9px',
         boxShadow: options.defaultBoxShadow,
-        width: options.height + 'px',
-        height: options.height + 'px',
+        width: options.width,
+        height: options.height||options.width,
         '-webkit-touch-callout': 'none',
         '-webkit-user-select': 'none',
         '-khtml-user-select': 'none',
@@ -47,6 +50,7 @@
         ev.stopImmediatePropagation(); // or just stopPropagation?
         el.squelch.bclick(el, ev);
       });
+      el.on("contextmenu", function() { return false; }); // disable context menu on right click
     });
   };
 
@@ -54,7 +58,7 @@
     if (el.squelched) { return; }
 
     el.squelched = true;
-    
+
     var body = $('body');
 
     var options = el.data('squelch');
@@ -70,12 +74,19 @@
 
     var touches = 1;
 
+    // console.log("Event: " + event.type);
+
     if (event.type === 'touchstart') {
       posSource = event.originalEvent.touches[0];
       touches = event.originalEvent.touches.length;
     } else {
       posSource = event;
+      // make right-click look like two-finger tap
+      if (event.which === 3) { touches = 2; }
     }
+
+    //console.log("pageX/Y: " + posSource.pageX + "/" + posSource.pageY);
+    //console.log("parentOffset: " + parentOffset.left + "/" + parentOffset.top);
 
     var relX = posSource.pageX - parentOffset.left;
     var relY = posSource.pageY - parentOffset.top;
@@ -119,7 +130,7 @@
   };
 
   $.fn.squelch.options = {
-    height: 140,
+    width: 140,
     xvelmin: -1.0,
     xvelmax: 1.0,
     xveltype: 'lin',
