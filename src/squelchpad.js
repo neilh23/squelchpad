@@ -8,60 +8,64 @@
 
 /* -- global console */
 
-(function ($) {
-  'use strict';
-  // Collection method.
-  $.fn.squelch = function (options) {
-    options = $.extend({}, $.fn.squelch.options, options);
-    var baseHue = $.Color(options.baseColor).hue();
-    var defaultColor = $.Color({
-      hue: baseHue,
-      saturation: options.defaultSaturation,
-      lightness: options.minLightness,
-    });
-    options.defaultColor = defaultColor;
-    return this.each(function () {
-      var el = $(this);
-      if (el.data('squelch')) {
-        el.trigger("mousedown", {});
-        el.trigger("mouseup", {});
-        return;
-      } 
-      el.squelched = false;
-      el.data('squelch', options);
-      el.css({
-        backgroundColor: defaultColor,
-        padding: '0px',
-        margin: '2px',
-        borderRadius: '9px',
-        boxShadow: options.defaultBoxShadow,
-        width: options.width,
-        height: options.height||options.width,
-        '-webkit-touch-callout': 'none',
-        '-webkit-user-select': 'none',
-        '-khtml-user-select': 'none',
-        '-moz-user-select': 'moz-none',
-        '-ms-user-select': 'none',
-        'user-select': 'none'
+function SquelchPad($, el, options) {
+  "use strict";
+  this.element = el;
 
-      });
-      el.on("mousedown touchstart", function(ev) {
-        ev.preventDefault();
-        ev.stopImmediatePropagation(); // or just stopPropagation?
-        el.squelch.bclick(el, ev);
-      });
-      el.on("contextmenu", function() { return false; }); // disable context menu on right click
-    });
-  };
+  this.jQuery = $;
+  options = this.options = $.extend({}, this.defaultOptions, options);
 
-  $.fn.squelch.bclick = function(el, event) {
-    if (el.squelched) { return; }
+  var baseHue = $.Color(options.baseColor).hue();
 
-    el.squelched = true;
+  var defaultColor = $.Color({
+    hue: baseHue,
+    saturation: options.defaultSaturation,
+    lightness: options.minLightness,
+  });
+
+  options.defaultColor = defaultColor;
+
+  this.squelched = false;
+  el.data('squelch', this);
+
+  var borderRad = '9px';
+
+  if (options.shape === 'circle') { borderRad = '50%'; }
+  el.css({
+    backgroundColor: defaultColor,
+    padding: '0px',
+    margin: '2px',
+    borderRadius: borderRad,
+    boxShadow: options.defaultBoxShadow,
+    width: options.width,
+    height: options.height||options.width,
+    '-webkit-touch-callout': 'none',
+    '-webkit-user-select': 'none',
+    '-khtml-user-select': 'none',
+    '-moz-user-select': 'moz-none',
+    '-ms-user-select': 'none',
+    'user-select': 'none'
+  });
+
+  el.on("mousedown touchstart", function(ev) {
+    ev.preventDefault();
+    ev.stopImmediatePropagation(); // or just stopPropagation?
+    el.data('squelch').squelchOn(ev);
+  });
+  el.on("contextmenu", function() { return false; }); // disable context menu on right click
+}
+
+
+SquelchPad.prototype = Object.create(null, {
+  squelchOn: { value: function(event) {
+    if (this.sequelched) { return; }
+
+    var el = this.element;
+    var $ = this.jQuery; // is this the accepted way of doing this?
+    this.squelched = true;
+    var options = this.options;
 
     var body = $('body');
-
-    var options = el.data('squelch');
 
     var oldColor = options.defaultColor;
     var light = oldColor.lightness();
@@ -113,23 +117,28 @@
     el.trigger("squelchOn", {velocity: velocity, xvel: xpos, yvel: ypos, touches: touches});
 
     el.css('backgroundColor', newColor);
+    this.oldColor = oldColor;
 
     // FIXME: use hammer.js? - https://hammerjs.github.io/ Maybe not - try and reduce dependencies!
     body.one("mouseup mouseleave touchend touchcancel", function(ev) {
       ev.preventDefault();
       ev.stopImmediatePropagation(); // or just stopPropagation?
-      if(el.squelched && ev.handled !== true) {
-        ev.handled = true;
-        el.squelched = false;
-        el.trigger("squelchOff", {});
-        el.animate({ backgroundColor: oldColor }, 300);
-      } else {
-        return false;
-      }
+      var sp = $(ev.target).data('squelch');
+      return sp.squelchOff(ev);
     });
-  };
+  }}, 
+  squelchOff: { value: function(event) {
+    if (!this.squelched || event.handled === true) { return false; }
 
-  $.fn.squelch.options = {
+    event.handled = true;
+    this.squelched = false;
+    this.element.trigger("squelchOff", {});
+
+    this.element.animate({ backgroundColor: this.oldColor }, 300);
+
+    return true;
+  }},
+  defaultOptions: { value: {
     width: 140,
     xvelmin: -1.0,
     xvelmax: 1.0,
@@ -146,16 +155,22 @@
     defaultBoxShadow: '2px 2px 2px black',
     highlightBoxShadow: '2px 2px 1px #666',
     defaultSaturation: 0.8,
-  };
+  }}
+});
 
-  // Static method.
-  $.squelch = function (options) {
-    options = $.extend({}, $.squelch.options, options);
-    return '';
-  };
 
-  // Static method default options.
-  $.squelch.options = {
-  };
+(function ($) {
+  'use strict';
+  $.fn.squelch = function (options) {
+    return this.each(function () {
+      var sq = $(this).data('squelch');
 
+      if (sq === undefined) {
+        new SquelchPad($, $(this), options);
+      } else {
+        sq.squelchOn(options||{});
+        sq.squelchOff(options||{});
+      }
+    });
+  };
 }(jQuery));

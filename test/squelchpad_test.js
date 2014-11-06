@@ -1,3 +1,4 @@
+/* global console */
 (function($) {
   /*
     ======== A Handy Little QUnit Reference ========
@@ -72,7 +73,10 @@
     var velocity = -1, squelched = false;
 
     bt1.on("squelchOn", function(e, args) { squelched = true; velocity = args.velocity; });
-    bt1.on("squelchOff", function() { squelched = false; });
+    bt1.on("squelchOff", function() {
+      console.log("moooooo");
+      squelched = false;
+    });
 
     bt1.trigger(mdEvent);
 
