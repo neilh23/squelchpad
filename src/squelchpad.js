@@ -13,6 +13,9 @@ function SquelchPad($, el, options) {
   this.element = el;
 
   this.jQuery = $;
+
+  if (options.toggle === true) { options.toggle = 1; }
+
   options = this.options = $.extend({}, this.defaultOptions, options);
 
   var baseHue = $.Color(options.baseColor).hue();
@@ -26,6 +29,8 @@ function SquelchPad($, el, options) {
   options.defaultColor = defaultColor;
 
   this.squelched = false;
+  this.toggleLevel = 0;
+
   el.data('squelch', this);
 
   var borderRad = '9px';
@@ -66,12 +71,6 @@ SquelchPad.prototype = Object.create(null, {
     var options = this.options;
 
     var body = $('body');
-
-    var oldColor = options.defaultColor;
-    var light = oldColor.lightness();
-    light = Math.min(light + 0.2, 1.0);
-
-    var newColor = $.Color(oldColor).lightness(light);
 
     var parentOffset = el.parent().offset(); 
     var posSource;
@@ -114,27 +113,67 @@ SquelchPad.prototype = Object.create(null, {
     // var velocity = velmin + velmax - p*(velmax - velmin);
     var velocity = velmin*(1 + p) + velmax*(1 - p);
 
-    el.trigger("squelchOn", {velocity: velocity, xvel: xpos, yvel: ypos, touches: touches});
+    var eventData = {
+      velocity: velocity,
+      xvel: xpos,
+      yvel: ypos,
+      touches: touches
+    };
 
-    el.css('backgroundColor', newColor);
-    this.oldColor = oldColor;
+    var eventType = 'squelchOn';
 
-    // FIXME: use hammer.js? - https://hammerjs.github.io/ Maybe not - try and reduce dependencies!
-    body.one("mouseup mouseleave touchend touchcancel", function(ev) {
-      ev.preventDefault();
-      ev.stopImmediatePropagation(); // or just stopPropagation?
-      var sp = $(ev.target).data('squelch');
-      return sp.squelchOff(ev);
-    });
+    var toggle = options.toggle;
+    if (toggle !== 0) {
+      var toggleLevel = this.toggleLevel;
+      toggleLevel++;
+      if (toggleLevel > toggle) {
+        toggleLevel = 0;
+      }
+      if (toggleLevel == 0) {
+        eventType = 'squelchOff';
+      } else if (toggleLevel != 1) {
+        eventType = 'squelchLevel';
+      }
+
+      this.toggleLevel = eventData['level'] = toggleLevel;
+
+      var minL = options.minLightness;
+      var maxL = options.maxLightness;
+
+      var newLight = minL + ((maxL - (minL + 0.05))*toggleLevel)/toggle;
+
+      this.element.animate({ backgroundColor: $.Color(oldColor).lightness(newLight) }, options.animateSpeed);
+    } else {
+      var oldColor = options.defaultColor;
+
+      var newColor = $.Color(oldColor).lightness(options.maxLightness);
+
+      el.css('backgroundColor', newColor);
+      this.oldColor = oldColor;
+    }
+
+
+    el.trigger(eventType, eventData);
+
+    if (toggle === 0) { // if we're in toggle mode, toggling to zero is a squelchOff!
+      body.one("mouseup mouseleave touchend touchcancel", function(ev) {
+        ev.preventDefault();
+        ev.stopImmediatePropagation(); // or just stopPropagation?
+        var sp = $(ev.target).data('squelch');
+        return sp.squelchOff(ev);
+      });
+    }
   }}, 
   squelchOff: { value: function(event) {
     if (!this.squelched || event.handled === true) { return false; }
+
+    var options = this.options;
 
     event.handled = true;
     this.squelched = false;
     this.element.trigger("squelchOff", {});
 
-    this.element.animate({ backgroundColor: this.oldColor }, 300);
+    this.element.animate({ backgroundColor: this.oldColor }, options.animateSpeed);
 
     return true;
   }},
@@ -149,12 +188,14 @@ SquelchPad.prototype = Object.create(null, {
     velmin: 0.0,
     velmax: 1.0,
     veltype: 'lin', // 'lin' or 'exp'
-    minLightness: 0.25,
-    maxLightness: 0.9,
+    minLightness: 0.165,
+    maxLightness: 0.5,
     baseColor: 'blue',
     defaultBoxShadow: '2px 2px 2px black',
     highlightBoxShadow: '2px 2px 1px #666',
     defaultSaturation: 0.8,
+    toggle: 0,
+    animateSpeed: 250
   }}
 });
 
