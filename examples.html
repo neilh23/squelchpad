@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Squelchpad Examples</title>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/jquery-color/jquery.color.js"></script>
+<script src="src/squelchpad.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+<script src="https://cdn.jsdelivr.net/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script>$(function($) { 
+    $('#bt0').squelch( { baseColor: 'red', toggle: true });
+    $('#bt0').on('squelchOn', function() { $('#bt0-text').text('Squelched'); });
+    $('#bt0').on('squelchOff', function() { $('#bt0-text').text('Unsquelched'); });
+
+    $('#bt1').squelch( { baseColor: 'blue', toggle: 5 });
+    $('#bt1').on('squelchOn', function(el, ev) { $('#bt1-text').text('Squelched - level ' + ev.level ); });
+    $('#bt1').on('squelchLevel', function(el, ev) { $('#bt1-text').text('Changed - level ' + ev.level ); });
+    $('#bt1').on('squelchOff', function() { $('#bt1-text').text('Unsquelched'); });
+});</script>
+</head>
+<body>
+<div class="container">
+<H1>Toggle</H1>
+<table>
+  <tr>
+    <td><div class="squelch" id="bt0"></div></td>
+    <td><div class="squelch" id="bt1"></div></td>
+  </tr>
+  <tr>
+    <td><span id="bt0-text">toggle: true</span></td>
+    <td><span id="bt1-text">toggle: 5</span></td>
+  </tr>
+</table>
+</div>
+</body>
+</html>
