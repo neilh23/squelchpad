@@ -61,7 +61,9 @@ function SquelchPad($, el, options) {
   el.on("mousedown touchstart", function(ev) {
     ev.preventDefault();
     ev.stopImmediatePropagation(); // or just stopPropagation?
-    el.data('squelch').squelchOn(ev);
+    if (options.readOnly !== true) {
+      el.data('squelch').squelchOn(ev);
+    }
   });
   el.on("contextmenu", function() { return false; }); // disable context menu on right click
 }

@@ -93,6 +93,22 @@
     bt1.trigger(mouseUp(bt1, 35, 35));
   });
 
+  test('can be readonly', function() {
+    expect(1);
+    var bt1 = $('#qunit-bt1');
+
+    bt1.squelch({readOnly: true});
+
+    var velocity = -1, squelched = false;
+
+    bt1.on("squelchOn", function(e, args) { squelched = true; velocity = args.velocity; });
+    bt1.on("squelchOff", function() { squelched = false; });
+
+    bt1.trigger(mouseDown(bt1, 70, 70));
+
+    strictEqual(squelched, false, 'callback suppressed');
+  });
+
   test('is togglable', function() {
     expect(6);
     var bt1 = $('#qunit-bt1');

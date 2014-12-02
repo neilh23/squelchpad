@@ -10,9 +10,9 @@
 <script src="https://cdn.jsdelivr.net/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script>
 $(function($) { 
-    $('#bt1').squelch({baseColor: 'red'});
-    $('#bt2').squelch({baseColor: 'green'});
-    $('#bt3').squelch({baseColor: 'blue'});
+    $('#bt1').squelch({baseColor: 'red', readOnly: true});
+    $('#bt2').squelch({baseColor: 'green', readOnly: true});
+    $('#bt3').squelch({baseColor: 'blue', readOnly: true});
   var place = 1;
   setInterval(function() {
     $('#bt'+place).squelch();
