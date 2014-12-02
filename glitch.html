@@ -1,0 +1,67 @@
+<html>
+<head>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/jquery-color/jquery.color.js"></script>
+<script src="src/squelchpad.js"></script>
+<script src="src/squelchpad.js"></script>
+<script>
+var context;
+var stopped = true;
+
+function glitch(buffer) {
+  "use strict";
+  if (stopped) { return; }
+
+  var timing = Math.random()*900;
+  var src = context.createBufferSource();
+  src.buffer = buffer;
+  src.connect(context.destination);
+  var loopStart = Math.random()*buffer.duration;
+  var loopEnd = loopStart + (Math.random()*(Math.min(270, buffer.duration - loopStart)));
+  var detune = 1.5 - Math.random()*1.7;
+  if (loopStart == loopEnd) {
+    setTimeout(timing, function() { glitch(buffer); } );
+  } else {
+    src.loop = true;
+    src.loopStart = loopStart;
+    src.loopEnd = loopEnd;
+    src.start(0, loopStart);
+    src.playbackRate.setValueAtTime(detune, 0);
+    setTimeout(function() {
+        src.stop();
+        glitch(buffer);
+    }, timing);
+  }
+}
+
+$(function($) {
+  $('#bt1').squelch({baseColor: 'red', toggle: true});
+
+  $('#bt1').on('squelchOn', function() {
+    stopped = false;
+    try {
+      context = new webkitAudioContext();
+    } catch(e) { alert("Web Audio API is not supported in this browser"); }
+
+    var request = new XMLHttpRequest();
+    request.open('GET', 'sounds/amen.wav', true);
+    request.responseType = 'arraybuffer';
+
+    request.addEventListener('load', function(e) {
+        var response = e.target.response;
+        context.decodeAudioData(e.target.response, function(buffer) {
+            glitch(buffer);
+        });
+    });
+    request.send();
+  });
+
+  $('#bt1').on('squelchOff', function() { stopped = true; });
+});
+
+</script>
+</head>
+<body>
+<div id="bt1" class="squelchme"></div>
+</body>
+</html>

@@ -144,6 +144,8 @@ SquelchPad.prototype = Object.create(null, {
 
       this.toggleLevel = eventData['level'] = toggleLevel;
 
+      // console.log("toggleLevel: " + toggleLevel);
+
       var minL = options.minLightness;
       var maxL = options.maxLightness;
 
@@ -162,14 +164,12 @@ SquelchPad.prototype = Object.create(null, {
 
     el.trigger(eventType, eventData);
 
-    if (toggle === 0) { // if we're in toggle mode, toggling to zero is a squelchOff!
-      body.one("mouseup mouseleave touchend touchcancel", function(ev) {
-        ev.preventDefault();
-        ev.stopImmediatePropagation(); // or just stopPropagation?
-        var sp = $(ev.target).data('squelch');
-        return sp.squelchOff(ev);
-      });
-    }
+    body.one("mouseup mouseleave touchend touchcancel", function(ev) {
+      ev.preventDefault();
+      ev.stopImmediatePropagation(); // or just stopPropagation?
+      var sp = $(ev.target).data('squelch');
+      return sp.squelchOff(ev);
+    });
   }}, 
   squelchOff: { value: function(event) {
     if (!this.squelched || event.handled === true) { return false; }
@@ -178,9 +178,12 @@ SquelchPad.prototype = Object.create(null, {
 
     event.handled = true;
     this.squelched = false;
-    this.element.trigger("squelchOff", {});
 
-    this.element.animate({ backgroundColor: this.oldColor }, options.animateSpeed);
+    if (options.toggle === 0) {
+      // if we're in toggle mode, squelchOff is handled on a level 0 event
+      this.element.trigger("squelchOff", {});
+      this.element.animate({ backgroundColor: this.oldColor }, options.animateSpeed);
+    }
 
     return true;
   }},
