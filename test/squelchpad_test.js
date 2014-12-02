@@ -1,4 +1,3 @@
-/* global console */
 (function($) {
   /*
     ======== A Handy Little QUnit Reference ========
@@ -20,6 +19,7 @@
       notStrictEqual(actual, expected, [message])
       throws(block, [expected], [message])
   */
+  /* global console */
 
   module('jQuery.squelchpad', {
     // This will run before each test in this module.
@@ -73,10 +73,7 @@
     var velocity = -1, squelched = false;
 
     bt1.on("squelchOn", function(e, args) { squelched = true; velocity = args.velocity; });
-    bt1.on("squelchOff", function() {
-      console.log("moooooo");
-      squelched = false;
-    });
+    bt1.on("squelchOff", function() { squelched = false; });
 
     bt1.trigger(mdEvent);
 
@@ -92,6 +89,89 @@
 
     bt1.trigger(mdEvent);
     strictEqual(velocity, 0.5, 'set velocity - 0.5');
+  });
+
+  test('is togglable', function() {
+    expect(4);
+    var bt1 = $('#qunit-bt1');
+
+    bt1.squelch({ baseColor: 'red', toggle: true});
+
+    var mdEvent = $.Event('mousedown');
+    var muEvent = $.Event('mouseup');
+    // note sure why the 'parentOffset' here is set to '-10000'?!
+    $.extend(mdEvent, { target: bt1, pageX: 70 - 10000, pageY: 70 - 10000 });
+    $.extend(muEvent, { target: bt1, pageX: 70 - 10000, pageY: 70 - 10000 });
+
+    var squelched = false, level = -1, levelCalled = false;
+
+    bt1.on("squelchOn squelchLevel", function(e, args) { squelched = true; level = args.level; });
+    bt1.on("squelchOff", function() { console.log("Called squelchOff"); squelched = false; levelCalled = true; });
+
+    bt1.trigger(mdEvent);
+    strictEqual(squelched, true, 'callback happened');
+
+    stop();
+    setTimeout(function() {
+      strictEqual($('#qunit-bt1').css('backgroundColor'), 'rgb(207, 23, 23)', 'should be light red');
+
+      bt1.trigger(muEvent);
+      strictEqual(squelched, true, 'still squelched');
+
+      bt1.trigger(mdEvent);
+      strictEqual(squelched, false, 'toggled');
+
+      setTimeout(function() {
+        strictEqual($('#qunit-bt1').css('backgroundColor'), 'rgb(76, 8, 8)', 'should be red');
+
+        bt1.trigger(muEvent);
+        strictEqual(squelched, false, 'still toggled');
+        start();
+      }, 300);
+    }, 300);
+
+  });
+
+  test('is multitoggleable', function() {
+    expect(4);
+    var bt1 = $('#qunit-bt1');
+
+    bt1.squelch({ toggle: 2});
+
+    var mdEvent = $.Event('mousedown');
+    var muEvent = $.Event('mouseup');
+    // note sure why the 'parentOffset' here is set to '-10000'?!
+    $.extend(mdEvent, { target: bt1, pageX: 70 - 10000, pageY: 70 - 10000 });
+    $.extend(muEvent, { target: bt1, pageX: 70 - 10000, pageY: 70 - 10000 });
+
+    var squelched = false, level = -1, levelCalled = false;
+
+    bt1.on("squelchOn", function(e, args) { squelched = true; level = args.level; });
+    bt1.on("squelchOff", function() { squelched = false; levelCalled = true; });
+
+    bt1.trigger(mdEvent);
+    strictEqual(level, 1, 'set level 1');
+    strictEqual(squelched, true, 'callback happened');
+    strictEqual($('#qunit-bt1').css('backgroundColor'), 'rgb(230, 25, 25)', 'should be light red');
+
+    bt1.trigger(muEvent);
+    strictEqual(squelched, true, 'still squelched');
+
+    bt1.trigger(mdEvent);
+    strictEqual(squelched, true, 'callback happened');
+    strictEqual(level, 2, 'set level 2');
+    strictEqual($('#qunit-bt1').css('backgroundColor'), 'rgb(230, 25, 25)', 'should be light red');
+
+    bt1.trigger(muEvent);
+    strictEqual(squelched, true, 'still squelched');
+
+    bt1.trigger(mdEvent);
+    strictEqual(squelched, false, 'toggled');
+    strictEqual($('#qunit-bt1').css('backgroundColor'), 'rgb(76, 8, 8)', 'should be red');
+
+    bt1.trigger(muEvent);
+    strictEqual(squelched, false, 'still toggled');
+
   });
 
 
