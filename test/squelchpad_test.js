@@ -36,12 +36,12 @@
 
   test('is colorful', function() {
     expect(6);
-    strictEqual($('#qunit-bt1').squelch({ baseColor: 'red'}).css('backgroundColor'), 'rgb(115, 13, 13)', 'should be red');
-    strictEqual($('#qunit-bt2').squelch({ baseColor: 'green'}).css('backgroundColor'), 'rgb(13, 115, 13)', 'should be green');
-    strictEqual($('#qunit-bt3').squelch({ baseColor: 'blue'}).css('backgroundColor'), 'rgb(13, 13, 115)', 'should be blue');
-    strictEqual($('#qunit-bt1').squelch().css('backgroundColor'), 'rgb(207, 23, 23)', 'should be light red');
-    strictEqual($('#qunit-bt2').squelch().css('backgroundColor'), 'rgb(23, 207, 23)', 'should be light green');
-    strictEqual($('#qunit-bt3').squelch().css('backgroundColor'), 'rgb(23, 23, 207)', 'should be light blue');
+    strictEqual($('#qunit-bt1').squelch({ baseColor: 'red'}).css('backgroundColor'), 'rgb(76, 8, 8)', 'should be red');
+    strictEqual($('#qunit-bt2').squelch({ baseColor: 'green'}).css('backgroundColor'), 'rgb(8, 76, 8)', 'should be green');
+    strictEqual($('#qunit-bt3').squelch({ baseColor: 'blue'}).css('backgroundColor'), 'rgb(8, 8, 76)', 'should be blue');
+    strictEqual($('#qunit-bt1').squelch().css('backgroundColor'), 'rgb(230, 25, 25)', 'should be light red');
+    strictEqual($('#qunit-bt2').squelch().css('backgroundColor'), 'rgb(25, 230, 25)', 'should be light green');
+    strictEqual($('#qunit-bt3').squelch().css('backgroundColor'), 'rgb(25, 25, 230)', 'should be light blue');
   });
 
   test('is sizable', function() {

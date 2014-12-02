@@ -14,7 +14,13 @@ function SquelchPad($, el, options) {
 
   this.jQuery = $;
 
-  if (options.toggle === true) { options.toggle = 1; }
+  if (options !== undefined) {
+    if (options.toggle === undefined) {
+      options.toggle = 0;
+    } else if (options.toggle === true) {
+      options.toggle = 1;
+    }
+  }
 
   options = this.options = $.extend({}, this.defaultOptions, options);
 
@@ -123,15 +129,16 @@ SquelchPad.prototype = Object.create(null, {
     var eventType = 'squelchOn';
 
     var toggle = options.toggle;
+
     if (toggle !== 0) {
       var toggleLevel = this.toggleLevel;
       toggleLevel++;
       if (toggleLevel > toggle) {
         toggleLevel = 0;
       }
-      if (toggleLevel == 0) {
+      if (toggleLevel === 0) {
         eventType = 'squelchOff';
-      } else if (toggleLevel != 1) {
+      } else if (toggleLevel !== 1) {
         eventType = 'squelchLevel';
       }
 
@@ -142,7 +149,7 @@ SquelchPad.prototype = Object.create(null, {
 
       var newLight = minL + ((maxL - (minL + 0.05))*toggleLevel)/toggle;
 
-      this.element.animate({ backgroundColor: $.Color(oldColor).lightness(newLight) }, options.animateSpeed);
+      this.element.animate({ backgroundColor: $.Color(options.defaultColor).lightness(newLight) }, options.animateSpeed);
     } else {
       var oldColor = options.defaultColor;
 
