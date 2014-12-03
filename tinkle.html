@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Squelchpad Tinkle</title>
+<!--meta name="viewport" content="width=device-width" -->
+<meta name="viewport" content="width=520,maximum-scale=3.0">
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/jquery-color/jquery.color.js"></script>
+<script src="src/squelchpad.js"></script>
+<script src="src/squelchpad-synth.js"></script>
+<script>$(function($) { 
+  var context;
+  
+  try {
+    context = new webkitAudioContext();
+  } catch(e) { alert("Web Audio API is not supported in this browser"); }
+
+  new SynthPad({
+    context: context,
+    element: $('#bt0'),
+    baseColor: 'red',
+    width: 660
+    });
+});</script>
+</head>
+<body>
+<table>
+  <tr>
+    <td><div class="squelch" id="bt0"></div></td>
+    <!--td><div class="squelch" id="bt1"></div></td>
+  </tr>
+  <tr>
+    <td><div class="squelch" id="bt2"></div></td>
+    <td><div class="squelch" id="bt3"></div></td -->
+  </tr>
+</table>
+<p><a href="index.html">back</a></p>
+</body>
+</html>

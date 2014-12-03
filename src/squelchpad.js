@@ -114,8 +114,19 @@ SquelchPad.prototype = Object.create(null, {
     var xmax = options.xvelmax;
     var ymin = options.yvelmin;
     var ymax = options.yvelmax;
-    var xpos = xmin + (xmax - xmin)*relX/wdth;
-    var ypos = ymin + (ymax - ymin)*relY/hght;
+
+    var xpos;
+    if (options.xveltype === 'exp') {
+      xpos = xmin + (xmax - xmin)*Math.pow((relX/wdth),Math.E);
+    } else { // default - linear
+      xpos = xmin + (xmax - xmin)*relX/wdth;
+    }
+    var ypos;
+    if (options.yveltype === 'exp') {
+      ypos = ymin + (ymax - ymin)*Math.pow((relY/hght),Math.E);
+    } else { // default - linear
+      ypos = ymin + (ymax - ymin)*relY/hght;
+    }
     var velmin = options.velmin;
     var velmax = options.velmax;
 
@@ -203,7 +214,7 @@ SquelchPad.prototype = Object.create(null, {
     xveltype: 'lin',
     yvelmin: -1.0,
     yvelmax: 1.0,
-    yveltype: 'exp',
+    yveltype: 'lin',
     velmin: 0.0,
     velmax: 1.0,
     veltype: 'lin', // 'lin' or 'exp'
