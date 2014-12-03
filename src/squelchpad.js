@@ -36,6 +36,7 @@ function SquelchPad($, el, options) {
 
   this.squelched = false;
   this.toggleLevel = 0;
+  this.readOnly = options.readOnly;
 
   el.data('squelch', this);
 
@@ -61,8 +62,9 @@ function SquelchPad($, el, options) {
   el.on("mousedown touchstart", function(ev) {
     ev.preventDefault();
     ev.stopImmediatePropagation(); // or just stopPropagation?
-    if (options.readOnly !== true) {
-      el.data('squelch').squelchOn(ev);
+    var squelch = el.data('squelch');
+    if (squelch.readOnly !== true) {
+      squelch.squelchOn(ev);
     }
   });
   el.on("contextmenu", function() { return false; }); // disable context menu on right click
@@ -72,6 +74,11 @@ function SquelchPad($, el, options) {
 SquelchPad.prototype = Object.create(null, {
   squelchOn: { value: function(event) {
     if (this.sequelched) { return; }
+
+    if (event.readOnly !== undefined) {
+      this.readOnly = event.readOnly;
+      return;
+    }
 
     var el = this.element;
     var $ = this.jQuery; // is this the accepted way of doing this?

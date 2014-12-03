@@ -94,7 +94,7 @@
   });
 
   test('can be readonly', function() {
-    expect(1);
+    expect(2);
     var bt1 = $('#qunit-bt1');
 
     bt1.squelch({readOnly: true});
@@ -107,6 +107,11 @@
     bt1.trigger(mouseDown(bt1, 70, 70));
 
     strictEqual(squelched, false, 'callback suppressed');
+
+    bt1.squelch({readOnly: false});
+
+    bt1.trigger(mouseDown(bt1, 35, 35));
+    strictEqual(squelched, true, 'callback re-enabled');
   });
 
   test('is togglable', function() {
