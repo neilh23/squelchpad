@@ -8,6 +8,8 @@
 <script src="bower_components/jquery-color/jquery.color.js"></script>
 <script src="src/squelchpad.js"></script>
 <script src="src/squelchpad-synth.js"></script>
+<script src="src/synths/tinkle.js"></script>
+
 <script>$(function($) { 
   var context;
   
@@ -15,25 +17,65 @@
     context = new webkitAudioContext();
   } catch(e) { alert("Web Audio API is not supported in this browser"); }
 
-  new SynthPad({
-    context: context,
-    element: $('#bt0'),
-    baseColor: 'red',
-    width: 660
+  var synth = new Synth(
+    {
+      context: context,
+      baseColor: 'red',
+      width: 120
     });
+
+  for (var x = 1; x <= 36; x++) {
+    if ($('#syn-'+x) !== undefined) {
+      synth.addNote($('#syn-'+x), x + 47);
+    }
+    }
 });</script>
+
 </head>
 <body>
 <table>
   <tr>
-    <td><div class="squelch" id="bt0"></div></td>
-    <!--td><div class="squelch" id="bt1"></div></td>
-  </tr>
+    <td><div class="squelch natural" id="syn-1"></div></td> <!-- C -->
+  <!-- div class="squelch sharp" id="syn-2"></div --> <!-- C# -->
+  <!-- div class="squelch natural" id="syn-3"></div --> <!-- D -->
+  <td><div class="squelch sharp" id="syn-4"></div></td> <!-- Eb -->
+  <!-- div class="squelch natural" id="syn-5"></div --> <!-- E -->
+  <td><div class="squelch natural" id="syn-6"></div></td> <!-- F -->
+  <!-- div class="squelch sharp" id="syn-7"></div --> <!-- Gb -->
+  <td><div class="squelch natural" id="syn-8"></div></td> <!-- G -->
+  <!-- div class="squelch sharp" id="syn-9"></div --> <!-- Ab -->
+  <!-- div class="squelch natural" id="syn-10"></div --> <!-- A -->
+  <td><div class="squelch natural" id="syn-11"></div></td> <!-- Bb -->
+  <!--div class="squelch natural" id="syn-12"></div --> <!-- B -->
+</tr>
   <tr>
-    <td><div class="squelch" id="bt2"></div></td>
-    <td><div class="squelch" id="bt3"></div></td -->
-  </tr>
+    <td><div class="squelch natural" id="syn-13"></div></td> <!-- C -->
+  <!-- div class="squelch sharp" id="syn-14"></div --> <!-- C# -->
+  <!-- div class="squelch natural" id="syn-15"></div --> <!-- D -->
+  <td><div class="squelch sharp" id="syn-16"></div></td> <!-- Eb -->
+  <!-- div class="squelch natural" id="syn-17"></div --> <!-- E -->
+  <td><div class="squelch natural" id="syn-18"></div></td> <!-- F -->
+  <!-- div class="squelch sharp" id="syn-19"></div --> <!-- Gb -->
+  <td><div class="squelch natural" id="syn-20"></div></td> <!-- G -->
+  <!-- div class="squelch sharp" id="syn-21"></div --> <!-- Ab -->
+  <!-- div class="squelch natural" id="syn-22"></div --> <!-- A -->
+  <td><div class="squelch natural" id="syn-23"></div></td> <!-- Bb -->
+  <!--div class="squelch natural" id="syn-24"></div --> <!-- B -->
+</tr>
+  <tr>
+    <td><div class="squelch natural" id="syn-25"></div></td> <!-- C -->
+  <!-- div class="squelch sharp" id="syn-26"></div --> <!-- C# -->
+  <!-- div class="squelch natural" id="syn-27"></div --> <!-- D -->
+  <td><div class="squelch sharp" id="syn-28"></div></td> <!-- Eb -->
+  <!-- div class="squelch natural" id="syn-29"></div --> <!-- E -->
+  <td><div class="squelch natural" id="syn-30"></div></td> <!-- F -->
+  <!-- div class="squelch sharp" id="syn-31"></div --> <!-- Gb -->
+  <td><div class="squelch natural" id="syn-32"></div></td> <!-- G -->
+  <!-- div class="squelch sharp" id="syn-33"></div --> <!-- Ab -->
+  <!-- div class="squelch natural" id="syn-34"></div --> <!-- A -->
+  <td><div class="squelch natural" id="syn-35"></div></td> <!-- Bb -->
+  <!--div class="squelch natural" id="syn-36"></div --> <!-- B -->
+</tr>
 </table>
-<p><a href="index.html">back</a></p>
 </body>
 </html>

@@ -1,7 +1,7 @@
 (function($) {
   function mouseEvent(eventType, target, x, y) {
     var mEvent = $.Event(eventType);
-    $.extend(mEvent, { target: target, pageX: x - 10000, pageY: y - 10000 });
+    $.extend(mEvent, { target: target, pageX: x - 10000, pageY: y - 10000, offsetX: x, offsetY: y });
 
     return mEvent;
   }

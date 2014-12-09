@@ -87,7 +87,6 @@ SquelchPad.prototype = Object.create(null, {
 
     var body = $('body');
 
-    var parentOffset = el.parent().offset(); 
     var posSource;
 
     var touches = 1;
@@ -103,27 +102,24 @@ SquelchPad.prototype = Object.create(null, {
       if (event.which === 3) { touches = 2; }
     }
 
-    //console.log("pageX/Y: " + posSource.pageX + "/" + posSource.pageY);
-    //console.log("parentOffset: " + parentOffset.left + "/" + parentOffset.top);
-
-    var relX = posSource.pageX - parentOffset.left;
-    var relY = posSource.pageY - parentOffset.top;
+    var relX = event.offsetX;
+    var relY = event.offsetY;
     var wdth = el.width(); // get these fresh in case of size change underneath
     var hght = el.height();
-    var xmin = options.yvelmin;
+    var xmin = options.xvelmin;
     var xmax = options.xvelmax;
     var ymin = options.yvelmin;
     var ymax = options.yvelmax;
 
     var xpos;
     if (options.xveltype === 'exp') {
-      xpos = xmin + (xmax - xmin)*Math.pow((relX/wdth),Math.E);
+      xpos = xmin + (xmax - xmin)*Math.pow((relX/wdth),2);
     } else { // default - linear
       xpos = xmin + (xmax - xmin)*relX/wdth;
     }
     var ypos;
     if (options.yveltype === 'exp') {
-      ypos = ymin + (ymax - ymin)*Math.pow((relY/hght),Math.E);
+      ypos = ymin + (ymax - ymin)*Math.pow((relY/hght),2);
     } else { // default - linear
       ypos = ymin + (ymax - ymin)*relY/hght;
     }
