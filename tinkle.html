@@ -24,11 +24,42 @@
       width: 120
     });
 
+  var synths = [];
   for (var x = 1; x <= 36; x++) {
-    if ($('#syn-'+x) !== undefined) {
-      synth.addNote($('#syn-'+x), x + 47);
+    var el = $('#syn-'+x);
+    if (el.attr('class') !== undefined) {
+      synth.addNote(el, x + 47);
+      synths.push(el);
     }
+  }
+
+  var bass_cuttoff = synths.length/3;
+
+  function playRandomNote(bass, chain) {
+    var target;
+    if (bass) {
+      target = synths[Math.floor(Math.random()*bass_cuttoff)];
+    } else {
+      target = synths[bass_cuttoff + (Math.floor(Math.random()*(synths.length - bass_cuttoff)))];
     }
+    target.squelch();
+
+    // randomly play more than one notes
+    if (!bass && Math.random() > 0.8) { playRandomNote(false); }
+    
+    var timeout;
+    
+    if (bass) {
+      timeout = 500 + (Math.random() > 0.9 ? 500 : 0);
+    } else {
+      timeout = 120 + Math.pow(Math.random(),2)*(Math.random() < 0.8 ? 800 : 2000);
+    }
+    if (chain) { setTimeout(function() { playRandomNote(bass, true); },  timeout); }
+  }
+
+  playRandomNote(true, true);
+  playRandomNote(false, true);
+
 });</script>
 
 </head>

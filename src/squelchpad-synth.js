@@ -36,12 +36,8 @@ Synth.prototype = Object.create(null, {
     element.squelch({
       baseColor: this.base_color||'blue',
       width: 90,
-      xvelmin: 150,
-      xvelmax: 2000,
       xveltype: 'exp',
-      yvelmin: 0.5,
-      yvelmax: 0.25,
-      yveltype: 'exp',
+      yveltype: 'exp'
     });
 
     element.squelch_synth = this.synth.factory({ "frequency": frequency, "context": this.context });
