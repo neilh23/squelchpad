@@ -5,9 +5,9 @@ function Tinkle(args) {
   this.context = args.context;
   this.destination = args.destination || this.context.destination; 
 
-  this.attack = 0.02||args.attack;
+  this.attack = 0.05||args.attack;
   this.decay = 0.02||args.attack;
-  this.release = 1.8||args.release;
+  this.release = 1.4||args.release;
   this.frequency = args.frequency;
 }
 
@@ -30,7 +30,7 @@ Tinkle.prototype = Object.create(null, {
     this.decayTime = (this.peakTime + this.decay);
     args.yvel = args.yvel|| Math.random();
 
-    var peak = 0.15 + (args.yvel||Math.sqrt(Math.random()))*0.35;
+    var peak = 0.1 + (args.yvel||Math.sqrt(Math.random()))*0.3;
 
     param.setValueAtTime(0.01, now);
     param.exponentialRampToValueAtTime(peak, this.peakTime);

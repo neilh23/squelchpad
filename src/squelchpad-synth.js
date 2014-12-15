@@ -28,8 +28,16 @@ Synth.prototype = Object.create(null, {
   midicps: { value: function(midi) { return (this.base_freq||440)* Math.pow(2, (midi - 69) / 12); }},
   // FIXME: create function for note 2 cps, e.g. 'C4', 'D#6', 'Gb3'
 
-  addNote: { value: function(element, note) {
+  addNote: { value: function(element, note, args) {
     "use strict";
+
+    if (args.base_color !== undefined) {
+      this.base_color = args.base_color;
+    }
+    if (args.base_octave !== undefined) {
+      this.base_octave = args.base_octave;
+    }
+
     var frequency = this.midicps(note);
     // console.log("Calculated frequency " + frequency + " for midi note: " + note);
 

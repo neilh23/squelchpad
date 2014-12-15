@@ -12,7 +12,7 @@
 
 <script>$(function($) { 
   var context;
-  
+
   try {
     context = new webkitAudioContext();
   } catch(e) { alert("Web Audio API is not supported in this browser"); }
@@ -20,7 +20,6 @@
   var synth = new Synth(
     {
       context: context,
-      baseColor: 'red',
       width: 120
     });
 
@@ -28,10 +27,12 @@
   for (var x = 1; x <= 36; x++) {
     var el = $('#syn-'+x);
     if (el.attr('class') !== undefined) {
-      synth.addNote(el, x + 47);
+    synth.addNote(el, x + 47, { base_color: (x < 12 ? '#00c'  : ( x < 24 ? '#04a' : '#08f' ) ) } );
       synths.push(el);
     }
   }
+
+  $('.squelch').squelch( { readOnly: true });
 
   var bass_cuttoff = synths.length/3;
 
@@ -50,7 +51,7 @@
     var timeout;
     
     if (bass) {
-      timeout = 500 + (Math.random() > 0.9 ? 500 : 0);
+      timeout = 550 + (Math.random() > 0.9 ? 550 : 0);
     } else {
       timeout = 120 + Math.pow(Math.random(),2)*(Math.random() < 0.8 ? 800 : 2000);
     }
