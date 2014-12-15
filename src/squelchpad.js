@@ -14,7 +14,13 @@ function SquelchPad($, el, options) {
 
   this.jQuery = $;
 
-  if (options.toggle === true) { options.toggle = 1; }
+  if (options !== undefined) {
+    if (options.toggle === undefined) {
+      options.toggle = 0;
+    } else if (options.toggle === true) {
+      options.toggle = 1;
+    }
+  }
 
   options = this.options = $.extend({}, this.defaultOptions, options);
 
@@ -30,6 +36,7 @@ function SquelchPad($, el, options) {
 
   this.squelched = false;
   this.toggleLevel = 0;
+  this.readOnly = options.readOnly;
 
   el.data('squelch', this);
 
@@ -55,7 +62,10 @@ function SquelchPad($, el, options) {
   el.on("mousedown touchstart", function(ev) {
     ev.preventDefault();
     ev.stopImmediatePropagation(); // or just stopPropagation?
-    el.data('squelch').squelchOn(ev);
+    var squelch = el.data('squelch');
+    if (squelch.readOnly !== true) {
+      squelch.squelchOn(ev);
+    }
   });
   el.on("contextmenu", function() { return false; }); // disable context menu on right click
 }
@@ -65,6 +75,11 @@ SquelchPad.prototype = Object.create(null, {
   squelchOn: { value: function(event) {
     if (this.sequelched) { return; }
 
+    if (event.readOnly !== undefined) {
+      this.readOnly = event.readOnly;
+      return;
+    }
+
     var el = this.element;
     var $ = this.jQuery; // is this the accepted way of doing this?
     this.squelched = true;
@@ -72,7 +87,6 @@ SquelchPad.prototype = Object.create(null, {
 
     var body = $('body');
 
-    var parentOffset = el.parent().offset(); 
     var posSource;
 
     var touches = 1;
@@ -88,19 +102,27 @@ SquelchPad.prototype = Object.create(null, {
       if (event.which === 3) { touches = 2; }
     }
 
-    //console.log("pageX/Y: " + posSource.pageX + "/" + posSource.pageY);
-    //console.log("parentOffset: " + parentOffset.left + "/" + parentOffset.top);
-
-    var relX = posSource.pageX - parentOffset.left;
-    var relY = posSource.pageY - parentOffset.top;
+    var relX = event.offsetX;
+    var relY = event.offsetY;
     var wdth = el.width(); // get these fresh in case of size change underneath
     var hght = el.height();
-    var xmin = options.yvelmin;
+    var xmin = options.xvelmin;
     var xmax = options.xvelmax;
     var ymin = options.yvelmin;
     var ymax = options.yvelmax;
-    var xpos = xmin + (xmax - xmin)*relX/wdth;
-    var ypos = ymin + (ymax - ymin)*relY/hght;
+
+    var xpos;
+    if (options.xveltype === 'exp') {
+      xpos = xmin + (xmax - xmin)*Math.pow((relX/wdth),2);
+    } else { // default - linear
+      xpos = xmin + (xmax - xmin)*relX/wdth;
+    }
+    var ypos;
+    if (options.yveltype === 'exp') {
+      ypos = ymin + (ymax - ymin)*Math.pow((relY/hght),2);
+    } else { // default - linear
+      ypos = ymin + (ymax - ymin)*relY/hght;
+    }
     var velmin = options.velmin;
     var velmax = options.velmax;
 
@@ -123,26 +145,29 @@ SquelchPad.prototype = Object.create(null, {
     var eventType = 'squelchOn';
 
     var toggle = options.toggle;
+
     if (toggle !== 0) {
       var toggleLevel = this.toggleLevel;
       toggleLevel++;
       if (toggleLevel > toggle) {
         toggleLevel = 0;
       }
-      if (toggleLevel == 0) {
+      if (toggleLevel === 0) {
         eventType = 'squelchOff';
-      } else if (toggleLevel != 1) {
+      } else if (toggleLevel !== 1) {
         eventType = 'squelchLevel';
       }
 
       this.toggleLevel = eventData['level'] = toggleLevel;
+
+      // console.log("toggleLevel: " + toggleLevel);
 
       var minL = options.minLightness;
       var maxL = options.maxLightness;
 
       var newLight = minL + ((maxL - (minL + 0.05))*toggleLevel)/toggle;
 
-      this.element.animate({ backgroundColor: $.Color(oldColor).lightness(newLight) }, options.animateSpeed);
+      this.element.animate({ backgroundColor: $.Color(options.defaultColor).lightness(newLight) }, options.animateSpeed);
     } else {
       var oldColor = options.defaultColor;
 
@@ -155,14 +180,12 @@ SquelchPad.prototype = Object.create(null, {
 
     el.trigger(eventType, eventData);
 
-    if (toggle === 0) { // if we're in toggle mode, toggling to zero is a squelchOff!
-      body.one("mouseup mouseleave touchend touchcancel", function(ev) {
-        ev.preventDefault();
-        ev.stopImmediatePropagation(); // or just stopPropagation?
-        var sp = $(ev.target).data('squelch');
-        return sp.squelchOff(ev);
-      });
-    }
+    body.one("mouseup mouseleave touchend touchcancel", function(ev) {
+      ev.preventDefault();
+      ev.stopImmediatePropagation(); // or just stopPropagation?
+      var sp = $(ev.target).data('squelch');
+      return sp.squelchOff(ev);
+    });
   }}, 
   squelchOff: { value: function(event) {
     if (!this.squelched || event.handled === true) { return false; }
@@ -171,9 +194,12 @@ SquelchPad.prototype = Object.create(null, {
 
     event.handled = true;
     this.squelched = false;
-    this.element.trigger("squelchOff", {});
 
-    this.element.animate({ backgroundColor: this.oldColor }, options.animateSpeed);
+    if (options.toggle === 0) {
+      // if we're in toggle mode, squelchOff is handled on a level 0 event
+      this.element.trigger("squelchOff", {});
+      this.element.animate({ backgroundColor: this.oldColor }, options.animateSpeed);
+    }
 
     return true;
   }},
@@ -184,7 +210,7 @@ SquelchPad.prototype = Object.create(null, {
     xveltype: 'lin',
     yvelmin: -1.0,
     yvelmax: 1.0,
-    yveltype: 'exp',
+    yveltype: 'lin',
     velmin: 0.0,
     velmax: 1.0,
     veltype: 'lin', // 'lin' or 'exp'

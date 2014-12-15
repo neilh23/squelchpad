@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Squelchpad Tinkle</title>
+<!--meta name="viewport" content="width=device-width" -->
+<meta name="viewport" content="width=520,maximum-scale=3.0">
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/jquery-color/jquery.color.js"></script>
+<script src="src/squelchpad.js"></script>
+<script src="src/squelchpad-synth.js"></script>
+<script src="src/synths/tinkle.js"></script>
+
+<script>$(function($) { 
+  var context;
+
+  try {
+    context = new webkitAudioContext();
+  } catch(e) { alert("Web Audio API is not supported in this browser"); }
+
+  var synth = new Synth( { context: context, width: 120 });
+
+  var synths = [];
+  for (var x = 1; x <= 36; x++) {
+    var el = $('#syn-'+x);
+    if (el.attr('class') !== undefined) {
+    synth.addNote(el, x + 47, { base_color: (x < 12 ? '#00c'  : ( x < 24 ? '#04a' : '#08f' ) ) } );
+      synths.push(el);
+    }
+  }
+
+  $('.squelch').squelch( { readOnly: true });
+
+  var bass_cuttoff = synths.length/3;
+
+  function playRandomNote(bass, chain) {
+    var target;
+    if (bass) {
+      target = synths[Math.floor(Math.random()*bass_cuttoff)];
+    } else {
+      target = synths[bass_cuttoff + (Math.floor(Math.random()*(synths.length - bass_cuttoff)))];
+    }
+    target.squelch();
+
+    // randomly play more than one notes
+    if (!bass && Math.random() > 0.8) { playRandomNote(false); }
+    
+    var timeout;
+    
+    if (bass) {
+      timeout = 550 + (Math.random() > 0.9 ? 550 : 0);
+    } else {
+      timeout = 120 + Math.pow(Math.random(),2)*(Math.random() < 0.8 ? 800 : 2000);
+    }
+    if (chain) { setTimeout(function() { playRandomNote(bass, true); },  timeout); }
+  }
+
+  playRandomNote(true, true);
+  playRandomNote(false, true);
+
+});</script>
+
+</head>
+<body>
+<table>
+  <tr>
+    <td><div class="squelch natural" id="syn-1"></div></td> <!-- C -->
+  <!-- div class="squelch sharp" id="syn-2"></div --> <!-- C# -->
+  <!-- div class="squelch natural" id="syn-3"></div --> <!-- D -->
+  <td><div class="squelch sharp" id="syn-4"></div></td> <!-- Eb -->
+  <!-- div class="squelch natural" id="syn-5"></div --> <!-- E -->
+  <td><div class="squelch natural" id="syn-6"></div></td> <!-- F -->
+  <!-- div class="squelch sharp" id="syn-7"></div --> <!-- Gb -->
+  <td><div class="squelch natural" id="syn-8"></div></td> <!-- G -->
+  <!-- div class="squelch sharp" id="syn-9"></div --> <!-- Ab -->
+  <!-- div class="squelch natural" id="syn-10"></div --> <!-- A -->
+  <td><div class="squelch natural" id="syn-11"></div></td> <!-- Bb -->
+  <!--div class="squelch natural" id="syn-12"></div --> <!-- B -->
+</tr>
+  <tr>
+    <td><div class="squelch natural" id="syn-13"></div></td> <!-- C -->
+  <!-- div class="squelch sharp" id="syn-14"></div --> <!-- C# -->
+  <!-- div class="squelch natural" id="syn-15"></div --> <!-- D -->
+  <td><div class="squelch sharp" id="syn-16"></div></td> <!-- Eb -->
+  <!-- div class="squelch natural" id="syn-17"></div --> <!-- E -->
+  <td><div class="squelch natural" id="syn-18"></div></td> <!-- F -->
+  <!-- div class="squelch sharp" id="syn-19"></div --> <!-- Gb -->
+  <td><div class="squelch natural" id="syn-20"></div></td> <!-- G -->
+  <!-- div class="squelch sharp" id="syn-21"></div --> <!-- Ab -->
+  <!-- div class="squelch natural" id="syn-22"></div --> <!-- A -->
+  <td><div class="squelch natural" id="syn-23"></div></td> <!-- Bb -->
+  <!--div class="squelch natural" id="syn-24"></div --> <!-- B -->
+</tr>
+  <tr>
+    <td><div class="squelch natural" id="syn-25"></div></td> <!-- C -->
+  <!-- div class="squelch sharp" id="syn-26"></div --> <!-- C# -->
+  <!-- div class="squelch natural" id="syn-27"></div --> <!-- D -->
+  <td><div class="squelch sharp" id="syn-28"></div></td> <!-- Eb -->
+  <!-- div class="squelch natural" id="syn-29"></div --> <!-- E -->
+  <td><div class="squelch natural" id="syn-30"></div></td> <!-- F -->
+  <!-- div class="squelch sharp" id="syn-31"></div --> <!-- Gb -->
+  <td><div class="squelch natural" id="syn-32"></div></td> <!-- G -->
+  <!-- div class="squelch sharp" id="syn-33"></div --> <!-- Ab -->
+  <!-- div class="squelch natural" id="syn-34"></div --> <!-- A -->
+  <td><div class="squelch natural" id="syn-35"></div></td> <!-- Bb -->
+  <!--div class="squelch natural" id="syn-36"></div --> <!-- B -->
+</tr>
+</table>
+</body>
+</html>
