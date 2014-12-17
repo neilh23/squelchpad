@@ -9,6 +9,7 @@
 <script src="src/squelchpad.js"></script>
 <script src="src/squelchpad-synth.js"></script>
 <script src="src/synths/tinkle.js"></script>
+<script src="src/synths/bass.js"></script>
 
 <script>$(function($) { 
   var context;
@@ -24,10 +25,18 @@
     });
 
   var synths = [];
-  for (var x = 1; x <= 36; x++) {
+  for (var x = 1; x < 12; x++) {
     var el = $('#syn-'+x);
     if (el.attr('class') !== undefined) {
-    synth.addNote(el, x + 47, { base_color: (x < 12 ? '#00c'  : ( x < 24 ? '#04a' : '#08f' ) ) } );
+    synth.addNote(el, x + 47, { base_color: '#00c', synth: "Bass" } );
+      synths.push(el);
+    }
+  }
+
+  for (var x = 12; x <= 36; x++) {
+    var el = $('#syn-'+x);
+    if (el.attr('class') !== undefined) {
+    synth.addNote(el, x + 47, { base_color: ( x < 24 ? '#04a' : '#08f' ), synth: "Tinkle" } );
       synths.push(el);
     }
   }

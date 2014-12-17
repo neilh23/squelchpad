@@ -28,6 +28,13 @@ Synth.prototype = Object.create(null, {
   midicps: { value: function(midi) { return (this.base_freq||440)* Math.pow(2, (midi - 69) / 12); }},
   // FIXME: create function for note 2 cps, e.g. 'C4', 'D#6', 'Gb3'
 
+  setSynth: { value: function(name) {
+    if (Synth.synths[name] === undefined) {
+      throw "No such synth: " +name;
+    }
+    this.synth = { "name": name, "factory": Synth.synths[name] };
+  }},
+
   addNote: { value: function(element, note, args) {
     "use strict";
 
@@ -36,6 +43,10 @@ Synth.prototype = Object.create(null, {
     }
     if (args.base_octave !== undefined) {
       this.base_octave = args.base_octave;
+    }
+
+    if (args.synth !== undefined) {
+      this.setSynth(args.synth);
     }
 
     var frequency = this.midicps(note);

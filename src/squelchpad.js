@@ -177,13 +177,14 @@ SquelchPad.prototype = Object.create(null, {
       this.oldColor = oldColor;
     }
 
-
     el.trigger(eventType, eventData);
+
+    var sp = this;
 
     body.one("mouseup mouseleave touchend touchcancel", function(ev) {
       ev.preventDefault();
       ev.stopImmediatePropagation(); // or just stopPropagation?
-      var sp = $(ev.target).data('squelch');
+      // var sp = $(ev.target).data('squelch');
       return sp.squelchOff(ev);
     });
   }}, 
