@@ -56,10 +56,16 @@ Synth.prototype = Object.create(null, {
       baseColor: this.base_color||'blue',
       width: 90,
       xveltype: 'exp',
-      yveltype: 'exp'
+      xvelmin: 0,
+      xvelmax: 1,
+      yveltype: 'exp',
+      yvelmin: 0,
+      yvelmax: 1,
+      velmin: 0,
+      velmax: 0
     });
 
-    element.squelch_synth = this.synth.factory({ "frequency": frequency, "context": this.context });
+    element.squelch_synth = this.synth.factory({ "frequency": frequency, "context": this.context, "destination": this.destination });
 
     element.on("squelchOn", function(e, args) { element.squelch_synth.playNote(args); });
     element.on("squelchOff", function(e, args) { element.squelch_synth.stopNote(args); });

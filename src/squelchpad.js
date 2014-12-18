@@ -83,9 +83,10 @@ SquelchPad.prototype = Object.create(null, {
     var el = this.element;
     var $ = this.jQuery; // is this the accepted way of doing this?
     this.squelched = true;
+
     var options = this.options;
 
-    var body = $('body');
+    // var body = $('body');
 
     var posSource;
 
@@ -181,12 +182,12 @@ SquelchPad.prototype = Object.create(null, {
 
     var sp = this;
 
-    body.one("mouseup mouseleave touchend touchcancel", function(ev) {
+    el.one("mouseup mouseleave touchend touchcancel", function(ev) {
       ev.preventDefault();
       ev.stopImmediatePropagation(); // or just stopPropagation?
-      // var sp = $(ev.target).data('squelch');
       return sp.squelchOff(ev);
     });
+
   }}, 
   squelchOff: { value: function(event) {
     if (!this.squelched || event.handled === true) { return false; }

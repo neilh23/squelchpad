@@ -8,40 +8,57 @@
 <script src="bower_components/jquery-color/jquery.color.js"></script>
 <script src="src/squelchpad.js"></script>
 <script src="src/squelchpad-synth.js"></script>
+<script src="src/adsr.js"></script>
+<script src="src/synths/tweazer.js"></script>
 <script src="src/synths/tinkle.js"></script>
 <script src="src/synths/bass.js"></script>
 
 <script>$(function($) { 
   var context;
+  var destination;
+  var playing = false;
 
   try {
     context = new webkitAudioContext();
   } catch(e) { alert("Web Audio API is not supported in this browser"); }
 
-  var synth = new Synth(
-    {
-      context: context,
-      width: 120
-    });
+  var gain = destination = context.createGain();
+  gain.gain.value = 0.6;
+  var lopass = context.createBiquadFilter();
+  lopass.frequency.setValueAtTime(1800, 0); // stop clicks
+  gain.connect(lopass);
+  var compressor = context.createDynamicsCompressor();
+  lopass.connect(compressor);
+  compressor.connect(context.destination);
+
+  var synth = new Synth( { context: context, "destination": destination,  width: 120 });
 
   var synths = [];
   for (var x = 1; x < 12; x++) {
     var el = $('#syn-'+x);
     if (el.attr('class') !== undefined) {
-    synth.addNote(el, x + 47, { base_color: '#00c', synth: "Bass" } );
+    synth.addNote(el, x + 47, { base_color: '#00c', synth: "Bass"} );
       synths.push(el);
     }
   }
 
-  for (var x = 12; x <= 36; x++) {
+  for (var x = 12; x < 24; x++) {
     var el = $('#syn-'+x);
     if (el.attr('class') !== undefined) {
-    synth.addNote(el, x + 47, { base_color: ( x < 24 ? '#04a' : '#08f' ), synth: "Tinkle" } );
+    synth.addNote(el, x + 47, { base_color: '#04a' , synth: "Tinkle"} );
       synths.push(el);
     }
   }
 
-  $('.squelch').squelch( { readOnly: true });
+  for (var x = 24; x <= 36; x++) {
+    var el = $('#syn-'+x);
+    if (el.attr('class') !== undefined) {
+    synth.addNote(el, x + 47, { base_color: '#08f', synth: "Tweazer"} );
+      synths.push(el);
+    }
+  }
+
+  // $('.squelch').squelch( { readOnly: true });
 
   var bass_cuttoff = synths.length/3;
 
@@ -64,11 +81,27 @@
     } else {
       timeout = 120 + Math.pow(Math.random(),2)*(Math.random() < 0.8 ? 800 : 2000);
     }
-    if (chain) { setTimeout(function() { playRandomNote(bass, true); },  timeout); }
+    if (chain && playing) { setTimeout(function() { playRandomNote(bass, true); },  timeout); }
   }
 
-  playRandomNote(true, true);
-  playRandomNote(false, true);
+  var st = $('#start-stop');
+  st.squelch({ baseColor: 'green',  toggle: true, width: 50});
+  st.on('squelchOn', function() { 
+    playing = true;
+    for (var x = 1; x <= 36; x++) {
+      var el = $('#syn-'+x);
+      if (el.attr('class') !== undefined) { el.squelch({readOnly: true}); }
+    }
+    playRandomNote(true, true);
+    playRandomNote(false, true);
+  });
+  st.on('squelchOff', function() {
+    playing = false;
+    for (var x = 1; x <= 36; x++) {
+      var el = $('#syn-'+x);
+      if (el.attr('class') !== undefined) { el.squelch({readOnly: false}); }
+    }
+  });
 
 });</script>
 
@@ -76,46 +109,49 @@
 <body>
 <table>
   <tr>
-    <td><div class="squelch natural" id="syn-1"></div></td> <!-- C -->
-  <!-- div class="squelch sharp" id="syn-2"></div --> <!-- C# -->
-  <!-- div class="squelch natural" id="syn-3"></div --> <!-- D -->
-  <td><div class="squelch sharp" id="syn-4"></div></td> <!-- Eb -->
-  <!-- div class="squelch natural" id="syn-5"></div --> <!-- E -->
-  <td><div class="squelch natural" id="syn-6"></div></td> <!-- F -->
-  <!-- div class="squelch sharp" id="syn-7"></div --> <!-- Gb -->
-  <td><div class="squelch natural" id="syn-8"></div></td> <!-- G -->
-  <!-- div class="squelch sharp" id="syn-9"></div --> <!-- Ab -->
-  <!-- div class="squelch natural" id="syn-10"></div --> <!-- A -->
-  <td><div class="squelch natural" id="syn-11"></div></td> <!-- Bb -->
-  <!--div class="squelch natural" id="syn-12"></div --> <!-- B -->
+    <td><div class="squelch" id="syn-1"></div></td> <!-- C -->
+  <!-- div class="squelch" id="syn-2"></div --> <!-- C# -->
+  <!-- div class="squelch" id="syn-3"></div --> <!-- D -->
+  <td><div class="squelch" id="syn-4"></div></td> <!-- Eb -->
+  <!-- div class="squelch" id="syn-5"></div --> <!-- E -->
+  <td><div class="squelch" id="syn-6"></div></td> <!-- F -->
+  <!-- div class="squelch" id="syn-7"></div --> <!-- Gb -->
+  <td><div class="squelch" id="syn-8"></div></td> <!-- G -->
+  <!-- div class="squelch" id="syn-9"></div --> <!-- Ab -->
+  <!-- div class="squelch" id="syn-10"></div --> <!-- A -->
+  <td><div class="squelch" id="syn-11"></div></td> <!-- Bb -->
+  <!--div class="squelch" id="syn-12"></div --> <!-- B -->
 </tr>
   <tr>
-    <td><div class="squelch natural" id="syn-13"></div></td> <!-- C -->
-  <!-- div class="squelch sharp" id="syn-14"></div --> <!-- C# -->
-  <!-- div class="squelch natural" id="syn-15"></div --> <!-- D -->
-  <td><div class="squelch sharp" id="syn-16"></div></td> <!-- Eb -->
-  <!-- div class="squelch natural" id="syn-17"></div --> <!-- E -->
-  <td><div class="squelch natural" id="syn-18"></div></td> <!-- F -->
-  <!-- div class="squelch sharp" id="syn-19"></div --> <!-- Gb -->
-  <td><div class="squelch natural" id="syn-20"></div></td> <!-- G -->
-  <!-- div class="squelch sharp" id="syn-21"></div --> <!-- Ab -->
-  <!-- div class="squelch natural" id="syn-22"></div --> <!-- A -->
-  <td><div class="squelch natural" id="syn-23"></div></td> <!-- Bb -->
-  <!--div class="squelch natural" id="syn-24"></div --> <!-- B -->
+    <td><div class="squelch" id="syn-13"></div></td> <!-- C -->
+  <!-- div class="squelch" id="syn-14"></div --> <!-- C# -->
+  <!-- div class="squelch" id="syn-15"></div --> <!-- D -->
+  <td><div class="squelch" id="syn-16"></div></td> <!-- Eb -->
+  <!-- div class="squelch" id="syn-17"></div --> <!-- E -->
+  <td><div class="squelch" id="syn-18"></div></td> <!-- F -->
+  <!-- div class="squelch" id="syn-19"></div --> <!-- Gb -->
+  <td><div class="squelch" id="syn-20"></div></td> <!-- G -->
+  <!-- div class="squelch" id="syn-21"></div --> <!-- Ab -->
+  <!-- div class="squelch" id="syn-22"></div --> <!-- A -->
+  <td><div class="squelch" id="syn-23"></div></td> <!-- Bb -->
+  <!--div class="squelch" id="syn-24"></div --> <!-- B -->
 </tr>
   <tr>
-    <td><div class="squelch natural" id="syn-25"></div></td> <!-- C -->
-  <!-- div class="squelch sharp" id="syn-26"></div --> <!-- C# -->
-  <!-- div class="squelch natural" id="syn-27"></div --> <!-- D -->
-  <td><div class="squelch sharp" id="syn-28"></div></td> <!-- Eb -->
-  <!-- div class="squelch natural" id="syn-29"></div --> <!-- E -->
-  <td><div class="squelch natural" id="syn-30"></div></td> <!-- F -->
-  <!-- div class="squelch sharp" id="syn-31"></div --> <!-- Gb -->
-  <td><div class="squelch natural" id="syn-32"></div></td> <!-- G -->
-  <!-- div class="squelch sharp" id="syn-33"></div --> <!-- Ab -->
-  <!-- div class="squelch natural" id="syn-34"></div --> <!-- A -->
-  <td><div class="squelch natural" id="syn-35"></div></td> <!-- Bb -->
-  <!--div class="squelch natural" id="syn-36"></div --> <!-- B -->
+    <td><div class="squelch" id="syn-25"></div></td> <!-- C -->
+  <!-- div class="squelch" id="syn-26"></div --> <!-- C# -->
+  <!-- div class="squelch" id="syn-27"></div --> <!-- D -->
+  <td><div class="squelch" id="syn-28"></div></td> <!-- Eb -->
+  <!-- div class="squelch" id="syn-29"></div --> <!-- E -->
+  <td><div class="squelch" id="syn-30"></div></td> <!-- F -->
+  <!-- div class="squelch" id="syn-31"></div --> <!-- Gb -->
+  <td><div class="squelch" id="syn-32"></div></td> <!-- G -->
+  <!-- div class="squelch" id="syn-33"></div --> <!-- Ab -->
+  <!-- div class="squelch" id="syn-34"></div --> <!-- A -->
+  <td><div class="squelch" id="syn-35"></div></td> <!-- Bb -->
+  <!--div class="squelch" id="syn-36"></div --> <!-- B -->
+</tr>
+<tr>
+  <td><div class="squelch" id="start-stop"></div></td> <!-- Bb -->
 </tr>
 </table>
 </body>
