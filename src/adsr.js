@@ -8,6 +8,7 @@ function ADSR(context, opts) {
   this._peak = opts.peak || p.peak.defaultValue;
   this._decay = opts.decay || p.decay.defaultValue;
   this._sustain = opts.sustain || p.sustain.defaultValue;
+  this._minSustain = opts.minSustain || p.minSustain.defaultValue;
   this._release = opts.release || p.release.defaultValue;
 }
 
@@ -32,7 +33,13 @@ ADSR.prototype = Object.create(null, {
   }},
   noteOff: { value: function() {
     var gain = this.output.gain;
-    this.releaseTime = Math.max(this._decayTime, this._context.currentTime) + this.release;
+    var now = this._context.currentTime;
+    var startRelease = this._decayTime + this._minSustain;
+    this.releaseTime = Math.max(startRelease, now) + this.release;
+    if (this._minSustain > 0 && now < startRelease) {
+      // ramp to the same value (i.e. don't start release yet)
+      gain.linearRampToValueAtTime(this._sustain, startRelease);
+    }
     gain.exponentialRampToValueAtTime(0.001, this.releaseTime);
     gain.setValueAtTime(0, this.releaseTime);
   }},
@@ -44,6 +51,7 @@ ADSR.prototype = Object.create(null, {
       peak: { min: 0, max: 1.0, defaultValue: 1.0, type: "float" },
       decay: { min: 0, max: 5, defaultValue: 0.01, type: "float" },
       sustain: { min: 0, max: 0.5, defaultValue: 0.8, type: "float" },
+      minSustain: { min: 0, max: 5, defaultValue: 0.0, type: "float" },
       release: { min: 0, max: 10, defaultValue: 0.01, type: "float" }
     }
   } },
@@ -66,6 +74,11 @@ ADSR.prototype = Object.create(null, {
     enumerable: true,
     get: function() { return this._sustain; },
     set: function(value) { this._sustain = value; }
+  },
+  minSustain: {
+    enumerable: true,
+    get: function() { return this._minSustain; },
+    set: function(value) { this._minSustain = value; }
   },
   release: {
     enumerable: true,
