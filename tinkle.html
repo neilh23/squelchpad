@@ -12,6 +12,7 @@
 <script src="src/synths/tweazer.js"></script>
 <script src="src/synths/tinkle.js"></script>
 <script src="src/synths/bass.js"></script>
+<script src="src/web-audio-ticker.js"></script>
 
 <script>$(function($) { 
   var context;
@@ -19,7 +20,7 @@
   var playing = false;
 
   try {
-    context = new webkitAudioContext();
+    context = new AudioContext();
   } catch(e) { alert("Web Audio API is not supported in this browser"); }
 
   var gain = destination = context.createGain();
@@ -60,29 +61,31 @@
 
   // $('.squelch').squelch( { readOnly: true });
 
+
+  function tinkle(ticker, bar, beat) {
+    /* bass */
+    ticker.noteTime(0, function() {
+        if (((beat == 1 || beat == 3) && Math.random() < 0.25)
+            || ((beat == 2) && Math.random() < 0.05)) {
+          return;
+        }
+        synths[Math.floor(Math.random()*bass_cuttoff)].squelch();
+    });
+
+    if (Math.random() < 0.2) { return; }
+    /* treble */
+    var tinkles = 1 + Math.floor(Math.random()*3);
+
+    for (var i = 0; i < tinkles; i++) {
+      ticker.noteTime(Math.random(), function() {
+        synths[bass_cuttoff + (Math.floor(Math.random()*(synths.length - bass_cuttoff)))].squelch();
+      });
+    }
+  }
+
   var bass_cuttoff = synths.length/3;
 
-  function playRandomNote(bass, chain) {
-    var target;
-    if (bass) {
-      target = synths[Math.floor(Math.random()*bass_cuttoff)];
-    } else {
-      target = synths[bass_cuttoff + (Math.floor(Math.random()*(synths.length - bass_cuttoff)))];
-    }
-    target.squelch();
-
-    // randomly play more than one notes
-    if (!bass && Math.random() > 0.8) { playRandomNote(false); }
-    
-    var timeout;
-    
-    if (bass) {
-      timeout = 550 + (Math.random() > 0.9 ? 550 : 0);
-    } else {
-      timeout = 120 + Math.pow(Math.random(),2)*(Math.random() < 0.8 ? 800 : 2000);
-    }
-    if (chain && playing) { setTimeout(function() { playRandomNote(bass, true); },  timeout); }
-  }
+  var ticker = new WebAudioTicker(context, tinkle);
 
   var st = $('#start-stop');
   st.squelch({ baseColor: 'green',  toggle: true, width: 50});
@@ -92,8 +95,7 @@
       var el = $('#syn-'+x);
       if (el.attr('class') !== undefined) { el.squelch({readOnly: true}); }
     }
-    playRandomNote(true, true);
-    playRandomNote(false, true);
+    ticker.start();
   });
   st.on('squelchOff', function() {
     playing = false;
@@ -101,6 +103,7 @@
       var el = $('#syn-'+x);
       if (el.attr('class') !== undefined) { el.squelch({readOnly: false}); }
     }
+    ticker.stop();
   });
 
 });</script>
