@@ -35,7 +35,7 @@ Bass.prototype = Object.create(null, {
 
     this.sub.frequency.value = this.frequency/2;
 
-    var volume = 0.1 + (args.yvel||Math.sqrt(Math.random()))*0.3;
+    var volume = 0.15 + (args.yvel||Math.sqrt(Math.random()))*0.3;
 
     this.gain.gain.setValueAtTime(volume, this.context.currentTime);
     this.oscillator.start(0);
