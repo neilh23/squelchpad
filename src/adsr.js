@@ -50,7 +50,7 @@ ADSR.prototype = Object.create(null, {
     name: "ADSR",
     params: {
       attack: { min: 0, max: 5, defaultValue: 0.01, type: "float" },
-      peak: { min: 0, max: 0.9, defaultValue: 0.9, type: "float" },
+      peak: { min: 0, max: 1.0, defaultValue: 1.0, type: "float" },
       decay: { min: 0, max: 5, defaultValue: 0.01, type: "float" },
       sustain: { min: 0, max: 0.5, defaultValue: 0.8, type: "float" },
       minSustain: { min: 0, max: 5, defaultValue: 0.0, type: "float" },

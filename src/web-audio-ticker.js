@@ -63,7 +63,6 @@ WebAudioTicker.prototype = Object.create(null, {
           this._nextTick = this._currentTick + this._ticktime;
 
           if (this._nextTick < now) {
-            console.log("ERROR - behind by " + (now - this._nextTick) + " seconds :-(");
             this._timeout /= 2;
             this._nextTick = now + this._ticktime;
           }
@@ -79,7 +78,6 @@ WebAudioTicker.prototype = Object.create(null, {
         } else {
           this._ahead = true;
           if (++this._aheadCount >= 4) {
-            console.log("Callback ahead - increasing timeout");
             this._timeout += (this._timeout/4);
           }
         }

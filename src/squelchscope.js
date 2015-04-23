@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  */
 
-/* global console */
+/* -- global console */
 
 function SquelchScope($, el, options) {
   // TODO: code nicked from squelchpad class
@@ -34,8 +34,6 @@ function SquelchScope($, el, options) {
     throw "No audio context passed to scope constructor";
   }
 
-  console.log("Base color:" + options.baseColor);
-
   var baseHue = $.Color(options.baseColor).hue();
 
   var defaultColor = $.Color({
@@ -43,8 +41,6 @@ function SquelchScope($, el, options) {
     saturation: options.saturation,
     lightness: options.lightness,
   });
-
-  console.log("Default color:" + defaultColor);
 
   options.defaultColor = defaultColor;
 
@@ -84,8 +80,6 @@ function SquelchScope($, el, options) {
 
   this._width = el.width();
   this._height = el.height();
-
-  console.log("Width: " + this._width + " height: " + this._height);
 
   var newCanvas = $('<canvas style="margin-left:auto;margin-right:auto"/>').width(this._width).height(this._height);
   el.append($(newCanvas));
