@@ -27,8 +27,8 @@
 
   var scope = new SquelchScope($, $('#scope'), {
     context: context,
-    width: 500,
-    height: 120,
+    width: 378,
+    height: 88,
     baseColor: '#09f',
     lightness: 0.25
 
@@ -48,7 +48,7 @@
   delay.output.connect(scope.input);
   scope.connect(context.destination);
 
-  var synth = new Synth( { context: context, "destination": destination,  width: 120 });
+  var synth = new Synth( { context: context, "destination": destination} );
 
   var synths = [];
   for (var x = 1; x < 12; x++) {
@@ -79,11 +79,15 @@
   // $('.squelch').squelch( { readOnly: true });
 
   // timing of next note
-  var chances = [ [ 0.5, 0 ], [ 0.3, 0.5 ], [ 0.6, 0.25 ], [ 0.7, 1/3 ], [ 0.8, 2/3 ] ];
+  var chances = [ [ 0.2, 0 ], [ 0.1, 0.5 ], [ 0.2, 0.25 ], [ 0.2, 1/3 ], [ 0.1, 2/3 ] ];
 
   function tinkle(ticker, bar, beat) {
     /* bass */
-    ticker.noteTime(0, function() { synths[Math.floor(Math.random()*bass_cuttoff)].squelch(); });
+    if (beat == 0) {
+      ticker.noteTime(0, function() { synths[Math.floor(Math.random()*bass_cuttoff)].squelch(); });
+    }
+
+    if ((beat%1) == 1 && Math.random() < 0.5) { return; }
 
     /* treble */
     ticker.noteTime(0, function() {
@@ -92,7 +96,7 @@
 
     var trig = {};
 
-    for (var i = 0; i < Math.random()*3; i++) {
+    for (var i = 0; i < Math.random()*2; i++) {
       var time = chances.reduce(function(p, c) {
         return p !== undefined ? p : ((Math.random() < c[0]) ? c[1] : undefined);
       }, undefined);
@@ -109,7 +113,7 @@
   var ticker = new WebAudioTicker(context, tinkle);
 
   var st = $('#start-stop');
-  st.squelch({ baseColor: 'green',  toggle: true, width: 50});
+  st.squelch({ baseColor: 'green',  toggle: true, width: 90});
   st.on('squelchOn', function() { 
     playing = true;
     for (var x = 1; x <= 36; x++) {
@@ -132,6 +136,10 @@
 </head>
 <body>
 <table>
+<tr>
+  <td><div class="squelch" id="start-stop"></div></td> <!-- Bb -->
+  <td colspan="4"><div id="scope"/></td>
+</tr>
   <tr>
     <td><div class="squelch" id="syn-1"></div></td> <!-- C -->
   <!-- div class="squelch" id="syn-2"></div --> <!-- C# -->
@@ -173,13 +181,6 @@
   <!-- div class="squelch" id="syn-34"></div --> <!-- A -->
   <td><div class="squelch" id="syn-35"></div></td> <!-- Bb -->
   <!--div class="squelch" id="syn-36"></div --> <!-- B -->
-</tr>
-<tr id="timestrip"/>
-<tr>
-  <td><div class="squelch" id="start-stop"></div></td> <!-- Bb -->
-</tr>
-<tr>
-  <td colspan="5"><div id="scope"/></td>
 </tr>
 </table>
 </body>

@@ -19,7 +19,7 @@ function WebAudioTicker(context, tick, opts) {
 
   opts = opts || {};
 
-  this._bpm   = opts.bpm || 102;
+  this._bpm   = opts.bpm || 93;
   this._bpt = opts.bpt || 1;
   this._bpb = opts.bpt || 4;
   this._callback = tick || function() { console.log("Tick"); };

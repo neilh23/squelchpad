@@ -138,12 +138,12 @@ function PingPongDelay(context /*, opts*/) {
   this.dryGain = context.createGain();
   this.leftDelayChain = new DelayChain(context, {
     offset: 0,
-    decay: 0.35,
+    decay: 0.4,
     time: 0.65
   });
   this.rightDelayChain = new DelayChain(context, {
     offset: 0,
-    decay: 0.35,
+    decay: 0.4,
     time: 0.45
   });
   this.leftPan = context.createStereoPanner();
