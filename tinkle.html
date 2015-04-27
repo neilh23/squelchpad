@@ -10,6 +10,7 @@
 <script src="src/squelchscope.js"></script>
 <script src="src/squelchpad-synth.js"></script>
 <script src="src/adsr.js"></script>
+<script src="src/delay.js"></script>
 <script src="src/synths/tweazer.js"></script>
 <script src="src/synths/tinkle.js"></script>
 <script src="src/synths/bass.js"></script>
@@ -41,7 +42,10 @@
   var compressor = context.createDynamicsCompressor();
   lopass.connect(compressor);
 
-  compressor.connect(scope.input);
+  var delay = new Delay(context);
+
+  compressor.connect(delay.input);
+  delay.output.connect(scope.input);
   scope.connect(context.destination);
 
   var synth = new Synth( { context: context, "destination": destination,  width: 120 });
@@ -170,6 +174,7 @@
   <td><div class="squelch" id="syn-35"></div></td> <!-- Bb -->
   <!--div class="squelch" id="syn-36"></div --> <!-- B -->
 </tr>
+<tr id="timestrip"/>
 <tr>
   <td><div class="squelch" id="start-stop"></div></td> <!-- Bb -->
 </tr>
