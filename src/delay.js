@@ -131,3 +131,61 @@ Delay.prototype = Object.create(null, {
     set: function(value) { this._time = value; }
   }
 });
+
+function PingPongDelay(context /*, opts*/) {
+  this.input = this.inputGain = context.createGain();
+  this.wetGain = context.createGain();
+  this.dryGain = context.createGain();
+  this.leftDelayChain = new DelayChain(context, {
+    offset: 0,
+    decay: 0.35,
+    time: 0.65
+  });
+  this.rightDelayChain = new DelayChain(context, {
+    offset: 0,
+    decay: 0.35,
+    time: 0.45
+  });
+  this.leftPan = context.createStereoPanner();
+  this.rightPan = context.createStereoPanner();
+  this.output = this.outGain = context.createGain();
+
+  this.inputGain.connect(this.wetGain);
+  this.inputGain.connect(this.dryGain);
+  this.dryGain.connect(this.outGain);
+  this.wetGain.connect(this.leftDelayChain.input);
+  this.wetGain.connect(this.rightDelayChain.input);
+  this.leftPan.pan.value = -0.9;
+  this.rightPan.pan.value = 0.9;
+  this.leftDelayChain.connect(this.leftPan);
+  this.rightDelayChain.connect(this.rightPan);
+  this.leftDelayChain.connect(this.rightDelayChain.input);
+  this.rightDelayChain.connect(this.leftDelayChain.input);
+  this.leftPan.connect(this.outGain);
+  this.rightPan.connect(this.outGain);
+
+  // var p = this.meta.params;
+  // opts = opts || {};
+}
+
+PingPongDelay.prototype = Object.create(null, {
+  connect: { value: function (dest) { this.output.connect( dest.input ? dest.input : dest ); } },
+  disconnect: { value: function () { this.output.disconnect(); } },
+  meta: { value: {
+    name: "Delay",
+    params: {
+      decay: { min: 0, max: 0.9, defaultValue: 0.4, type: "float" },
+      time: { min: 0, max: 5.0, defaultValue: 1.0, type: "float" }
+    }
+  } },
+  decay: {
+    enumerable: true,
+    get: function() { return this._decay; },
+    set: function(value) { this._decay = value; }
+  },
+  time: {
+    enumerable: true,
+    get: function() { return this._time; },
+    set: function(value) { this._time = value; }
+  }
+});

@@ -42,7 +42,7 @@
   var compressor = context.createDynamicsCompressor();
   lopass.connect(compressor);
 
-  var delay = new Delay(context);
+  var delay = new PingPongDelay(context);
 
   compressor.connect(delay.input);
   delay.output.connect(scope.input);
