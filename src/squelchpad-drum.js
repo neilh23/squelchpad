@@ -46,7 +46,10 @@ function DrumPad(args) {
   this.hasPan = false;
   this.hasMultiPress = false;
 
-  el.squelch({baseColor: args.baseColor||'blue' });
+  el.squelch({
+    baseColor: args.baseColor||'blue',
+    width: args.width
+  });
 
   for (var i = 0; i < this.samples.length; i++) {
     var p = this.samples[i];

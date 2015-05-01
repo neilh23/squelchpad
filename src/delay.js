@@ -5,6 +5,7 @@ var MAXDELAY = 5.0;
  * delay connected to decay
  * decay connected to delay and output
  */
+/* global console */
 function DelayChain(context, opts) {
   var p = this.meta.params;
   opts = opts || {};
