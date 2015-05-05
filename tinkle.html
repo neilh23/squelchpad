@@ -14,6 +14,7 @@
 <script src="src/synths/tweazer.js"></script>
 <script src="src/synths/tinkle.js"></script>
 <script src="src/synths/bass.js"></script>
+<script src="src/squelchpad-drum.js"></script>
 <script src="src/web-audio-ticker.js"></script>
 
 <script>$(function($) { 
@@ -35,16 +36,24 @@
   });
 
   var gain = destination = context.createGain();
-  gain.gain.value = 0.6;
+  gain.gain.value = 0.5;
   var lopass = context.createBiquadFilter();
   lopass.frequency.setValueAtTime(1800, 0); // stop clicks
   gain.connect(lopass);
   var compressor = context.createDynamicsCompressor();
   lopass.connect(compressor);
 
+  var lopass2 = context.createBiquadFilter();
+  lopass2.frequency.setValueAtTime(490, 0);
+
+  var drumg = context.createGain();
+  drumg.gain.value = 0.5;
+  lopass2.connect(drumg);
+
   var delay = new PingPongDelay(context);
 
   compressor.connect(delay.input);
+  drumg.connect(delay.input);
   delay.output.connect(scope.input);
   scope.connect(context.destination);
 
@@ -75,11 +84,66 @@
     }
   }
 
+  new DrumPad({
+    context: context,
+    element: $('#drum-1'),
+    baseColor: 'red',
+    width: 90,
+    destination: lopass2,
+    samples: [ { sample: 'sounds/kick.wav' } ]
+    });
 
+  new DrumPad({
+    context: context,
+    element: $('#drum-2'),
+    width: 90,
+    destination: lopass2,
+    baseColor: 'red',
+    samples: [ { sample: 'sounds/hihat-closed.wav' } ]
+    });
+
+  new DrumPad({
+    context: context,
+    element: $('#drum-3'),
+    width: 90,
+    destination: lopass2,
+    baseColor: 'red',
+    samples: [ { sample: 'sounds/hihat-open.wav' } ]
+    });
+
+  new DrumPad({
+    context: context,
+    element: $('#drum-4'),
+    width: 90,
+    destination: lopass2,
+    baseColor: 'red',
+    samples: [ { sample: 'sounds/snare.wav' } ]
+    });
+
+  new DrumPad({
+    context: context,
+    element: $('#drum-5'),
+    width: 90,
+    destination: lopass2,
+    baseColor: 'red',
+    samples: [ { sample: 'sounds/clap.wav' } ]
+    });
   // $('.squelch').squelch( { readOnly: true });
 
   // timing of next note
   var chances = [ [ 0.2, 0 ], [ 0.1, 0.5 ], [ 0.2, 0.25 ], [ 0.2, 1/3 ], [ 0.1, 2/3 ] ];
+
+  var drum_track = [
+    [ 1, 0, 0, 0, 1, 0, 1, 0 ],
+    [ 0, 1, 0, 1, 0, 1, 0, 0 ],
+    [ 0, 0, 0, 1, 0, 0, 1, 0 ],
+    [ 0, 0, 0, 0, 1, 0, 0, 1 ],
+    [ 0, 0, 0, 1, 0, 0, 0, 0 ]
+  ]
+
+  function sched_drum(idx, time) {
+    ticker.noteTime(0, function() { $('#drum-' + (idx+1)).squelch(); });
+  }
 
   function tinkle(ticker, bar, beat) {
     /* bass */
@@ -105,6 +169,13 @@
       trig[rsynth + time] = true; // rsynth is int, time is a float < 1, so can add together :-)
 
       ticker.noteTime(time, function() { synths[rsynth].squelch(); });
+    }
+
+    var extbeat = beat + ((bar%2) * 4);
+    for (var i = 0; i < 5; i++ ) {
+      if ((drum_track[i][extbeat] === 1 && Math.random() < 0.8) || Math.random() < 0.3) {
+        sched_drum(i, 0);
+      }
     }
   }
 
@@ -181,6 +252,13 @@
   <!-- div class="squelch" id="syn-34"></div --> <!-- A -->
   <td><div class="squelch" id="syn-35"></div></td> <!-- Bb -->
   <!--div class="squelch" id="syn-36"></div --> <!-- B -->
+</tr>
+<tr>
+  <td><div class="squelch" id="drum-1"></div></td>
+  <td><div class="squelch" id="drum-2"></div></td>
+  <td><div class="squelch" id="drum-3"></div></td>
+  <td><div class="squelch" id="drum-4"></div></td>
+  <td><div class="squelch" id="drum-5"></div></td>
 </tr>
 </table>
 </body>
