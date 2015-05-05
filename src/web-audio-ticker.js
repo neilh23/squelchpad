@@ -19,7 +19,7 @@ function WebAudioTicker(context, tick, opts) {
 
   opts = opts || {};
 
-  this._bpm   = opts.bpm || 102;
+  this._bpm   = opts.bpm || 93;
   this._bpt = opts.bpt || 1;
   this._bpb = opts.bpt || 4;
   this._callback = tick || function() { console.log("Tick"); };
@@ -63,6 +63,7 @@ WebAudioTicker.prototype = Object.create(null, {
           this._nextTick = this._currentTick + this._ticktime;
 
           if (this._nextTick < now) {
+            console.log("ERROR - behind by " + (now - this._nextTick) + " seconds :-(");
             this._timeout /= 2;
             this._nextTick = now + this._ticktime;
           }
@@ -78,6 +79,7 @@ WebAudioTicker.prototype = Object.create(null, {
         } else {
           this._ahead = true;
           if (++this._aheadCount >= 4) {
+            console.log("Callback ahead - increasing timeout");
             this._timeout += (this._timeout/4);
           }
         }
